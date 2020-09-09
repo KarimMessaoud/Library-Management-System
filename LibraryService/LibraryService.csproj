@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hangfire.Core" Version="1.7.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LibraryData\LibraryData.csproj" />
   </ItemGroup>
 

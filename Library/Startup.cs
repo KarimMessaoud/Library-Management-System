@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using LibraryData;
 using LibraryData.Models.Account;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +35,11 @@ namespace Library
                 => options.UseSqlServer(Configuration.GetConnectionString("LibraryConnection")));
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<LibraryContext>();
+
+            services.AddHangfire(options =>
+            {
+                options.UseSqlServerStorage(Configuration.GetConnectionString("LibraryConnection"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +62,9 @@ namespace Library
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
 
             app.UseEndpoints(endpoints =>
             {
