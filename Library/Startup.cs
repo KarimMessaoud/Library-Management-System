@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using LibraryData;
@@ -62,6 +63,11 @@ namespace Library
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Culture specific problems
+            var currentCulture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+            currentCulture.NumberFormat.NumberDecimalSeparator = ".";
+            CultureInfo.DefaultThreadCurrentCulture = currentCulture;
         }
     }
 }
