@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Library.Security;
 using LibraryData;
 using LibraryData.Models.Account;
 using LibraryService;
@@ -49,6 +50,8 @@ namespace Library
             {
                 options.UseSqlServerStorage(Configuration.GetConnectionString("LibraryConnection"));
             });
+
+            services.AddSingleton<DataProtectionPurposeStrings>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
