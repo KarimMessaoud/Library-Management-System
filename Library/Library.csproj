@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.12" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
