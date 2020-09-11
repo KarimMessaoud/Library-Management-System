@@ -1,0 +1,82 @@
+﻿@model Library.Models.Patron.PatronEditViewModel
+@using LibraryData
+@inject ILibraryBranch  branch
+@inject SignInManager<User> signInManager
+
+@{
+    ViewBag.Title = "Edit patron";
+}
+
+@section TopHeaders
+{
+    <h2 class="text-center mt-4">@ViewBag.Title</h2>
+    <hr class="whiteLine" />
+}
+
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div>
+        <input asp-for="Id" type="hidden" />
+    </div>
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center mt-5">
+            <label asp-for="FirstName"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="LastName"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="Address"></label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="DateOfBirth"></label>
+            <input asp-for="DateOfBirth" class="form-control" />
+            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="Telephone"></label>
+            <input asp-for="Telephone" class="form-control" />
+            <span asp-validation-for="Telephone" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="HomeLibraryBranchName"></label>
+            <select asp-for="HomeLibraryBranchName" class="form-control">
+                <option value="">Please Select</option>
+                @foreach (var branchName in branch.GetAll())
+                {
+                    <option value="@branchName.Name">@branchName.Name</option>
+                }
+            </select>
+            <span asp-validation-for="HomeLibraryBranchName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto text-center">
+            <input type="submit" value="Update" class="btn btn-primary" />
+
+                <a asp-controller="Patron" asp-action="Index" class="btn btn-primary" style="width:auto">Back to list</a>
+
+                <a asp-controller="Patron" asp-action="Detail" asp-route-id="@Model.Id" class="btn btn-primary" style="width:auto">Cancel</a>
+
+        </div>
+    </div>
+</form>

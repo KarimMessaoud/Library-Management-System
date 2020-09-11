@@ -106,3 +106,7 @@ body {
         text-align: center;
     }
 }
+
+.container .whiteLine {
+    border-top: 1px solid white;
+}
