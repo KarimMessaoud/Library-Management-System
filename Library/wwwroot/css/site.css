@@ -84,3 +84,25 @@ body {
 .navbar {
     background-color: #19a56f;
 }
+
+#patronHasFees {
+    color: #c62222;
+    font-weight: bold;
+}
+
+#patronNoFees {
+    color: #2f6fc7;
+    font-weight: bold;
+}
+
+
+@media(max-width: 767px) {
+
+    #patronDetailAssetsCheckedOut {
+        margin-top: 20px;
+    }
+
+    .patronDetail {
+        text-align: center;
+    }
+}

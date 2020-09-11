@@ -1,5 +1,6 @@
 ﻿using Library.Models.Patron;
 using LibraryData;
+using LibraryData.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,41 @@ namespace Library.Controllers
                 Patrons = patronModels
             };
 
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            var patron = _patron.Get(id);
+
+            if (patron == null)
+            {
+                Response.StatusCode = 404;
+                return View("PatronNotFound", id);
+            }
+
+            var model = new PatronDetailModel()
+            {
+                Id = patron.Id,
+                LastName = patron.LastName,
+                FirstName = patron.FirstName,
+                Address = patron.Address,
+                HomeLibraryBranch = patron.HomeLibraryBranch.Name,
+                MemberSince = patron.LibraryCard.Created,
+                OverdueFees = patron.LibraryCard.Fees,
+                LibraryCardId = patron.LibraryCard.Id,
+                Telephone = patron.PhoneNumber,
+                AssetsCheckedOut = await _patron.GetCheckouts(id) ?? new List<Checkout>(),
+                CheckoutHistory = await _patron.GetCheckoutHistory(id),
+                Holds = await _patron.GetHolds(id)
+            };
 
             return View(model);
         }
