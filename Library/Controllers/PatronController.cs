@@ -148,5 +148,56 @@ namespace Library.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult Delete(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            var patron = _patron.Get(id);
+
+            if (patron == null)
+            {
+                Response.StatusCode = 404;
+                return View("PatronNotFound", id);
+            }
+
+            var model = new PatronEditViewModel
+            {
+                Id = patron.Id,
+                FirstName = patron.FirstName,
+                LastName = patron.LastName,
+                Address = patron.Address,
+                DateOfBirth = patron.DateOfBirth,
+                HomeLibraryBranchName = patron.HomeLibraryBranch.Name,
+                Telephone = patron.PhoneNumber
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            var patron = _patron.Get(id);
+
+            if (patron == null)
+            {
+                return NotFound();
+            }
+
+            await _userManager.DeleteAsync(patron);
+
+            return RedirectToAction("Index", "Patron");
+        }
     }
 }
