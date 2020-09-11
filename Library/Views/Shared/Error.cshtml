@@ -1,0 +1,13 @@
+﻿@if (ViewBag.ErrorTitle == null)
+{
+    <h3 class="text-justify mt-4">
+        An error occured while processing your request.
+        The support team is notified and we are working on the fix.
+    </h3>
+    <h5 class="text-justify mt-4">Please contact us on support@library.com, if you need any information about this problem.</h5>
+}
+else
+{
+    <h1 class="text-danger text-center mt-4">@ViewBag.ErrorTitle</h1>
+    <h6 class="text-danger text-center mt-4">@ViewBag.ErrorMessage</h6>
+}

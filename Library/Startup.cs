@@ -44,7 +44,8 @@ namespace Library
             services.AddDbContext<LibraryContext>(options
                 => options.UseSqlServer(Configuration.GetConnectionString("LibraryConnection")));
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<LibraryContext>();
+                .AddEntityFrameworkStores<LibraryContext>()
+                .AddDefaultTokenProviders();
 
             services.AddHangfire(options =>
             {
