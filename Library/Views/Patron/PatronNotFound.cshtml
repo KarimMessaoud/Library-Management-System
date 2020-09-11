@@ -1,0 +1,18 @@
+﻿@model int
+
+@{
+    ViewBag.Title = "404 Error";
+}
+
+<div class="alert alert-danger text-center mt-4 mb-4">
+    <h4>404 Not Found Error :</h4>
+    <hr />
+    <h5>
+        Patron with ID = @Model cannot be found
+    </h5>
+</div>
+
+<div class="text-center">
+    <a asp-controller="Patron" asp-action="Index" class="btn btn-outline-success"
+       style="width:auto">Click here to see the list of all patrons</a>
+</div>
