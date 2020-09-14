@@ -120,5 +120,61 @@ namespace Library.Controllers
 
             return View("Error");
         }
+
+        [HttpGet]
+        public IActionResult Login(string returnUrl)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user != null && !user.EmailConfirmed && await _userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    ModelState.AddModelError("", "Email not confirmed yet");
+                    return View(model);
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+
+                if (result.Succeeded)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+                if (result.IsLockedOut)
+                {
+                    return View("AccountLocked");
+                }
+
+                ModelState.AddModelError("", "Invalid login attempt.");
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

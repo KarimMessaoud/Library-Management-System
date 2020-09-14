@@ -43,7 +43,12 @@ namespace Library
 
             services.AddDbContext<LibraryContext>(options
                 => options.UseSqlServer(Configuration.GetConnectionString("LibraryConnection")));
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+            })
                 .AddEntityFrameworkStores<LibraryContext>()
                 .AddDefaultTokenProviders();
 

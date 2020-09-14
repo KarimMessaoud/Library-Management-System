@@ -1,0 +1,51 @@
+﻿@model Library.Models.Account.LoginViewModel
+
+@{
+    ViewBag.Title = "Sign in";
+}
+
+@section TopHeaders
+{
+    <h2 class="text-center mt-4">Sign in to your account</h2>
+    <hr class="whiteLine"/>
+}
+
+
+
+<form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+    <div asp-validation-summary="All" class="text-danger text-center"></div>
+    <div class="form-group row">
+        <div class="col-sm-6 mx-auto text-center mt-4">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-6 mx-auto text-center">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-6 mx-auto">
+            <div class="form-check">
+                <label class="form-check-label" asp-for="RememberMe">
+                    <input class="form-check-input" asp-for="RememberMe" />
+                    @Html.DisplayNameFor(model => model.RememberMe)
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 mx-auto text-center">
+            <input type="submit" value="Sign In" class="btn btn-primary" />
+            <div class="mt-4">
+                <a asp-action="ForgotPassword">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+
+</form>
