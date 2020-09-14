@@ -61,6 +61,21 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Patron" asp-action="Index">Patrons</a>
                         </li>
+
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#"
+                                   id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    Manage
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-controller="Account"
+                                       asp-action="ChangePassword">Change password</a>
+                                </div>
+                            </li>
+                        }
                     </ul>
 
                     <ul class="navbar-nav ml-auto">
