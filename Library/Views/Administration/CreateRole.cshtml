@@ -1,0 +1,32 @@
+﻿@model Library.Models.Administration.CreateRoleViewModel
+
+@{
+    ViewBag.Title = "Creating role";
+}
+
+@section TopHeaders
+{ 
+    <h2 class="text-center mt-4">Create new role</h2>
+    <hr class="whiteLine" />
+}
+
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger text-center"></div>
+    <div class="row">
+        <div class="col-sm-6 mx-auto text-center mt-4">
+            <div class="form-group">
+                <label asp-for="RoleName"></label>
+                <input asp-for="RoleName" class="form-control" />
+                <span asp-validation-for="RoleName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6 mx-auto text-center">
+            <input type="submit" value="Create Role" class="btn btn-primary" style="width:auto" />
+            <a asp-action="RolesList" class="btn btn-primary">Cancel</a>
+        </div>
+    </div>
+</form>
+    
