@@ -80,6 +80,11 @@ namespace Library.Controllers
                         $"<a href= \"{confirmationLink}\">Please confirm you email address " +
                         $"by clicking this text</a>"));
 
+                    if (_signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("UsersList", "Administration");
+                    }
+
                     ViewBag.ErrorTitle = "Registration successful";
                     ViewBag.ErrorMessage = "Before you can log in,"
                     + " please confirm your email, by clicking on the confirmation link "
