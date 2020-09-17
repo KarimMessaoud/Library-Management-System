@@ -1,4 +1,13 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function confirmDelete(uniqueId, isDeleteClicked) {
+    var deleteSpanId = 'deleteSpan_' + uniqueId;
+    var confirmDeleteSpanId = 'confirmDeleteSpan_' + uniqueId;
 
-// Write your JavaScript code.
+    if (isDeleteClicked) {
+        $('#' + deleteSpanId).hide();
+        $('#' + confirmDeleteSpanId).show();
+    }
+    else {
+        $('#' + deleteSpanId).show();
+        $('#' + confirmDeleteSpanId).hide();
+    }
+}
