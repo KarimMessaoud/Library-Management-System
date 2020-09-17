@@ -35,6 +35,14 @@ namespace Library.Controllers
         }
 
         [HttpGet]
+        public IActionResult UsersList()
+        {
+            var users = _userManager.Users;
+
+            return View(users);
+        }
+
+        [HttpGet]
         public IActionResult CreateRole()
         {
             return View();
@@ -200,7 +208,6 @@ namespace Library.Controllers
 
         }
 
-        
         public async Task<IActionResult> DeleteRole(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -238,12 +245,29 @@ namespace Library.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult UsersList()
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            var users = _userManager.Users;
+            var user = await _userManager.FindByIdAsync(id);
 
-            return View(users);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id: {id} cannot be found.";
+                return View("NotFound");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("UsersList");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View("UsersList");
         }
     }
 }
