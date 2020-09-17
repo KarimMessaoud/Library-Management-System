@@ -34,6 +34,7 @@ namespace Library.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = "Admin, Employee")]
         public IActionResult Index(string searchString)
         {
             var allPatrons = _patron.GetAll();
@@ -141,6 +142,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Employee, Patron")]
         public async Task<IActionResult> Detail(string id)
         {
             if (id == null)
@@ -176,6 +178,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Employee, Patron")]
         public IActionResult Edit(string id)
         {
             if (id == null)
@@ -207,6 +210,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee, Patron")]
         public async Task<IActionResult> Edit(PatronEditViewModel model)
         {
             if (ModelState.IsValid)
@@ -235,6 +239,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Employee")]
         public IActionResult Delete(string id)
         {
             if (id == null)
@@ -266,6 +271,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             if (id == null)
