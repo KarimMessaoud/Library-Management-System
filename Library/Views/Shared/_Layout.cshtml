@@ -62,7 +62,7 @@
                             <a class="nav-link" asp-area="" asp-controller="Patron" asp-action="Index">Patrons</a>
                         </li>
 
-                        @if (signInManager.IsSignedIn(User))
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#"
