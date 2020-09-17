@@ -3,6 +3,8 @@ using LibraryData.Models.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,12 +14,15 @@ namespace Library.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<AdministrationController> _logger;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
-                                        UserManager<User> userManager)
+                                        UserManager<User> userManager,
+                                        ILogger<AdministrationController> logger)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _logger = logger;
         }
 
         
@@ -193,6 +198,44 @@ namespace Library.Controllers
 
             return RedirectToAction("EditRole", new { Id = role.Id });
 
+        }
+
+        
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                ViewBag.ErrorMessage = $"Role with id: {id} cannot be found.";
+                return View("NotFound");
+            }
+
+            try
+            {
+                var result = await _roleManager.DeleteAsync(role);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("RolesList");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                return View("RolesList");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Exception occured: {ex}");
+                ViewBag.ErrorTitle = $"{role.Name} role is in use.";
+                ViewBag.ErrorMessage = $"{role.Name} role cannot be deleted." +
+                    $" If you want to delete this role, please remove the users" +
+                    $" from the role and then try to delete.";
+                return View("Error");
+            }
         }
     }
 }
