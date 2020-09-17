@@ -1,9 +1,12 @@
-﻿using Library.Models.Patron;
+﻿using Hangfire;
+using Library.Models.Patron;
 using LibraryData;
 using LibraryData.Models;
 using LibraryData.Models.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +19,19 @@ namespace Library.Controllers
         private readonly IPatron _patron;
         private readonly ILibraryBranch _branch;
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly ILogger<AccountController> _logger;
         public PatronController(IPatron patron,
             ILibraryBranch branch,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            ILogger<AccountController> logger)
         {
             _patron = patron;
             _branch = branch;
             _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = logger;
         }
 
         public IActionResult Index(string searchString)
@@ -51,6 +60,82 @@ namespace Library.Controllers
                 Patrons = patronModels
             };
 
+
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(PatronCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new User
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    UserName = model.Email,
+                    Email = model.Email,
+                    Address = model.Address,
+                    DateOfBirth = model.DateOfBirth,
+                    PhoneNumber = model.Telephone,
+                    LibraryCard = new LibraryCard
+                    {
+                        Fees = 0,
+                        Created = DateTime.Now
+                    },
+                    HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName)
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                        new { userId = user.Id, token = token }, Request.Scheme);
+
+                    _logger.Log(LogLevel.Warning, confirmationLink);
+
+                    var addToRoleResult = await _userManager.AddToRoleAsync(user, "Patron");
+                    if (!addToRoleResult.Succeeded)
+                    {
+                        ModelState.AddModelError("", "Cannot add user to the Patron role.");
+                        return View(model);
+                    }
+
+                    BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(user.FirstName, user.Email, "Email confirmation",
+                        $"Congratulations! You are registered. </br>" +
+                        $"<a href= \"{confirmationLink}\">Please confirm your email address " +
+                        $"by clicking this text</a>"));
+
+                    if (_signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                    {
+                        return RedirectToAction("UsersList", "Administration");
+                    }
+
+                    ViewBag.ErrorTitle = "Registration successful";
+                    ViewBag.ErrorMessage = "Before you can log in,"
+                    + " please confirm your email, by clicking on the confirmation link "
+                    + "we have emailed you.";
+
+                    return View("~/Views/Account/RegistrationSuccessful.cshtml");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
 
             return View(model);
         }
