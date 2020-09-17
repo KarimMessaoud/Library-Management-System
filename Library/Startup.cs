@@ -42,6 +42,13 @@ namespace Library
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("DeleteRolePolicy",
+                policy => policy.RequireClaim("Delete Role", "true"));
+
+            });
+
             services.AddSingleton<IEmailConfiguration>(Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<ILibraryAssetService, LibraryAssetService>();
