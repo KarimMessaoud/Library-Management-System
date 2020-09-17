@@ -28,7 +28,13 @@ namespace Library.Controllers
             _logger = logger;
         }
 
-        
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         [HttpGet]
         public IActionResult RolesList()
         {
