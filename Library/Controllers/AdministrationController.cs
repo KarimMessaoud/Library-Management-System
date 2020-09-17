@@ -237,5 +237,13 @@ namespace Library.Controllers
                 return View("Error");
             }
         }
+
+        [HttpGet]
+        public IActionResult UsersList()
+        {
+            var users = _userManager.Users;
+
+            return View(users);
+        }
     }
 }
