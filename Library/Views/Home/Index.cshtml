@@ -1,20 +1,43 @@
-﻿@{
+﻿@inject SignInManager<User> signInManager
+
+@{
     ViewBag.Title = "Library Management System";
 }
 
 <h1 class="my-4 text-center">@ViewBag.Title</h1>
 
 <div class="row">
-    <div class="col-sm-6 col-md-4 mt-4">
-        <figure>
-            <a asp-controller="Catalog" asp-action="Index"><img class="img-fluid border rounded" src="images/old-books.jpg" asp-append-version="true" alt="Books"></a>
-            <figcaption class="text-center">Library Catalog</figcaption>
-        </figure>
 
-        <div class="text-center">
-            <a asp-controller="Catalog" asp-action="Index">View Catalog</a>
+    @if (!signInManager.IsSignedIn(User)
+       || (signInManager.IsSignedIn(User) && User.IsInRole("Patron") && !User.IsInRole("Admin") && !User.IsInRole("Employee"))
+       || (signInManager.IsSignedIn(User) && !User.IsInRole("Admin") && !User.IsInRole("Employee") && !User.IsInRole("Patron")))
+    {
+        <div class="col-sm-6 col-md-4 mt-4 offset-md-2">
+            <figure>
+                <a asp-controller="Catalog" asp-action="Index"><img class="img-fluid border rounded" src="images/old-books.jpg" asp-append-version="true" alt="Books"></a>
+                <figcaption class="text-center">Library Catalog</figcaption>
+            </figure>
+
+            <div class="text-center">
+                <a asp-controller="Catalog" asp-action="Index">View Catalog</a>
+            </div>
         </div>
-    </div>
+    }
+
+    else if ((signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee"))))
+    {
+        <div class="col-sm-6 col-md-4 mt-4">
+            <figure>
+                <a asp-controller="Catalog" asp-action="Index"><img class="img-fluid border rounded" src="images/old-books.jpg" asp-append-version="true" alt="Books"></a>
+                <figcaption class="text-center">Library Catalog</figcaption>
+            </figure>
+
+            <div class="text-center">
+                <a asp-controller="Catalog" asp-action="Index">View Catalog</a>
+            </div>
+        </div>
+    }
+
 
     <div class="col-sm-6 col-md-4 mt-4">
 
@@ -28,16 +51,19 @@
         </div>
     </div>
 
-    <div class="col-sm-6 col-md-4 mt-4">
+    @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee")))
+    {
+        <div class="col-sm-6 offset-sm-3 col-md-4 offset-md-0 mt-4">
 
-        <figure>
-            <a asp-controller="Patron" asp-action="Index"><img class="img-fluid border rounded" src="images/patrons.jpg" asp-append-version="true" alt="Patrons"></a>
-            <figcaption class="text-center">Patrons</figcaption>
-        </figure>
+            <figure>
+                <a asp-controller="Patron" asp-action="Index"><img class="img-fluid border rounded" src="images/patrons.jpg" asp-append-version="true" alt="Patrons"></a>
+                <figcaption class="text-center">Patrons</figcaption>
+            </figure>
 
-        <div class="text-center">
-            <a asp-controller="Patron" asp-action="Index">View Patron Index</a>
+            <div class="text-center">
+                <a asp-controller="Patron" asp-action="Index">View Patron Index</a>
+            </div>
+
         </div>
-
-    </div>
+    }
 </div>
