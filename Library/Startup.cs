@@ -78,6 +78,9 @@ namespace Library
                 options.UseSqlServerStorage(Configuration.GetConnectionString("LibraryConnection"));
             });
 
+            services.Configure<DataProtectionTokenProviderOptions>(x =>
+            x.TokenLifespan = TimeSpan.FromHours(5));
+
             services.AddSingleton<DataProtectionPurposeStrings>();
         }
 
