@@ -67,11 +67,13 @@ namespace Library
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
+                options.Tokens.EmailConfirmationTokenProvider = "CustomEmailConfirmation";
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
             })
                 .AddEntityFrameworkStores<LibraryContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddTokenProvider<CustomEmailConfirmationTokenProvider<User>>("CustomEmailConfirmation");
 
             services.AddHangfire(options =>
             {
@@ -80,6 +82,9 @@ namespace Library
 
             services.Configure<DataProtectionTokenProviderOptions>(x =>
             x.TokenLifespan = TimeSpan.FromHours(5));
+
+            services.Configure<CustomEmailConfirmationTokenProviderOptions>(x =>
+            x.TokenLifespan = TimeSpan.FromDays(3));
 
             services.AddSingleton<DataProtectionPurposeStrings>();
         }
