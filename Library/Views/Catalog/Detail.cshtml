@@ -1,0 +1,139 @@
+﻿@model Library.Models.Catalog.AssetDetailModel
+
+@inject SignInManager<User> signInManager
+
+
+@{
+    ViewBag.Title = "Asset's details";
+    var picturePath = Model.ImageUrl ?? "/images/default.png";
+}
+
+<div class="page-header clearfix detailHeading">
+    <h2 class="text-muted text-center">View Library item</h2>
+</div>
+
+<div class="jumbotron">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div>
+                <img class="img-fluid" src="@picturePath" asp-append-version="true" />
+            </div>
+        </div>
+        <div class="col-md-4 text-dark">
+            <p id="itemTitle">@Model.Title</p>
+            <p id="itemAuthor">@Model.AuthorOrDirector</p>
+            <p id="itemStatus">@Model.Status</p>
+            <p id="itemType">@Model.Type</p>
+            <p id="itemLocation">@Model.CurrentLocation</p>
+
+            @if (Model.Status == "Lost")
+            {
+                <p>This item has been lost. It cannot be checked out.</p>
+                <p><a class="btn btn-lg btn-outline-primary" style="width:auto" role="button" asp-controller="Catalog" asp-action="MarkFound" asp-route-assetId="@Model.AssetId">Mark Item Found</a></p>
+            }
+            else if(Model.Status != "Lost" && signInManager.IsSignedIn(User) && (!User.IsInRole("Employee")))
+            {
+                <p><a class="btn btn-lg btn-outline-primary" style="width:auto" asp-controller="Catalog" asp-action="Hold" asp-route-id="@Model.AssetId">Place Hold</a></p>
+            }
+
+            @if (Model.Status == "Checked Out")
+            {
+                <p id="itemPatron">Checked Out By: @Model.PatronName</p>
+
+               
+                @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee")))
+                {
+                    <p><a class="btn btn-lg btn-outline-primary" style="width:auto" asp-controller="Catalog" asp-action="CheckIn" asp-route-id="@Model.AssetId">Check In</a></p>
+                    <p><a class="btn btn-lg btn-outline-primary" style="width:auto" asp-controller="Catalog" asp-action="MarkLost" asp-route-assetId="@Model.AssetId">Mark Item Lost</a></p>
+                }
+            }
+
+
+
+            @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee")))
+            {
+                @if (Model.Status == "Available" || Model.Status == "On Hold")
+                {
+                    <p><a class="btn btn-lg btn-outline-primary" style="width:auto" asp-controller="Catalog" asp-action="Checkout" asp-route-id="@Model.AssetId">Check Out</a></p>
+                }
+
+                @if (Model.Type == "Book")
+                {
+                    <a asp-controller="Catalog" asp-action="EditBook" asp-route-id="@Model.AssetId" class="btn btn-outline-primary">Edit</a>
+                }
+
+                @if (Model.Type == "Video")
+                {
+                    <a asp-controller="Catalog" asp-action="EditVideo" asp-route-id="@Model.AssetId" class="btn btn-outline-primary">Edit</a>
+                }
+
+                <a asp-controller="Catalog" asp-action="Delete" asp-route-id="@Model.AssetId" class="btn btn-outline-danger">Delete</a>
+            }
+
+        </div>
+
+        <div class="col-md-4 detailInfo">
+            <dl>
+                @if (Model.Type == "Book")
+                {
+                    <dt>ISBN</dt>
+                    <dd>@Model.ISBN</dd>
+                }
+                <dt>Replacement Cost</dt>
+                <dd>@Model.Cost</dd>
+            </dl>
+            <br />
+            <a asp-action="Index">Back to list</a>
+        </div>
+    </div>
+</div>
+
+@if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee") || User.IsInRole("Patron")))
+{
+<div class="row">
+    <div class="col-lg-6 text-center">
+        <h4>Checkout History</h4>
+        <table class="table table-bordered table-hover table-condensed text-white" id="checkoutHistoryTable">
+            <thead>
+                <tr>
+                    <th>Date loaned</th>
+                    <th>Date returned</th>
+                    <th>Card Id</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var checkout in Model.CheckoutHistory)
+                {
+                    <tr>
+                        <td>@checkout.CheckedOut</td>
+                        <td>@checkout.CheckedIn</td>
+                        <td>@checkout.LibraryCard.Id</td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-6 text-center">
+        <h4>Current Holds</h4>
+        <table class="table table-bordered table-hover table-condensed text-white" id="currentHoldsTable">
+            <thead>
+                <tr>
+                    <th>Hold Placed</th>
+                    <th>Patron</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hold in Model.CurrentHolds)
+                {
+                    <tr>
+                        <td>@hold.HoldPlaced</td>
+                        <td>@hold.PatronName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+}
+    

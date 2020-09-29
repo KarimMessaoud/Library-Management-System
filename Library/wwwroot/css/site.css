@@ -93,6 +93,24 @@ body {
         color: black;
     }
 
+.detailInfo {
+    padding: 10px;
+    font-size: 1.3em;
+    color: #555;
+}
+
+.detailHeading {
+    padding: 10px;
+}
+
+#checkoutHistoryTable tr:hover {
+    background-color: grey;
+}
+
+#currentHoldsTable tr:hover {
+    background-color: grey;
+}
+
 
 .navbar {
     background-color: #19a56f;

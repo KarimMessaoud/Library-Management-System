@@ -19,6 +19,7 @@ namespace Library.Controllers
         private readonly ILibraryBranch _branch;
         private readonly LibraryContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ICheckout _checkout;
 
         public CatalogController(
                         ILibraryAssetService assetsService,
@@ -26,13 +27,15 @@ namespace Library.Controllers
                         DataProtectionPurposeStrings dataProtectionPurposeStrings,
                         ILibraryBranch branch,
                         LibraryContext context,
-                        IWebHostEnvironment webHostEnvironment)
+                        IWebHostEnvironment webHostEnvironment,
+                        ICheckout checkout)
         {
             _assetsService = assetsService;
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
             _branch = branch;
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _checkout = checkout;
         }
 
         [AllowAnonymous]
@@ -184,6 +187,50 @@ namespace Library.Controllers
             }
 
             return uniqueFileName;
+        }
+
+        [AllowAnonymous]
+        public IActionResult Detail(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+            var asset = _assetsService.GetById(decryptedId);
+
+            if (asset == null)
+            {
+                return View("AssetNotFound", decryptedId);
+            }
+
+            var currentHolds = _checkout.GetCurrentHolds(decryptedId)
+                .Select(x => new AssetHoldModel
+                {
+                    PatronName = _checkout.GetCurrentHoldPatronName(x.Id),
+                    HoldPlaced = _checkout.GetCurrentHoldPlaced(x.Id)
+                });
+
+            var model = new AssetDetailModel
+            {
+                AssetId = id,
+                Title = asset.Title,
+                AuthorOrDirector = _assetsService.GetAuthorOrDirector(decryptedId),
+                Type = _assetsService.GetType(decryptedId),
+                Year = asset.Year,
+                ISBN = _assetsService.GetIsbn(decryptedId),
+                Status = asset.Status.Name,
+                Cost = asset.Cost,
+                CurrentLocation = _assetsService.GetCurrentLocation(decryptedId).Name,
+                ImageUrl = asset.ImageUrl,
+                LatestCheckout = _checkout.GetLatestCheckout(decryptedId),
+                PatronName = _checkout.GetCurrentCheckoutPatron(decryptedId),
+                CheckoutHistory = _checkout.GetCheckoutHistory(decryptedId),
+                CurrentHolds = currentHolds
+            };
+
+            return View(model);
         }
     }
 }
