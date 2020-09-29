@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Create new item";
+}
+
+<div class="card text-center mt-4">
+    <div class="card-header">
+        <h2 class="text-dark">Which item would you like to create?</h2>
+    </div>
+    <div class="card-body">
+        <a class="btn btn-primary btn-lg" style="width:auto" asp-controller="Catalog" asp-action="CreateBook">Book</a>
+        <a class="btn btn-primary btn-lg" style="width:auto" asp-controller="Catalog" asp-action="CreateVideo">Video</a>
+    </div>
+    <div class="card-footer">
+        <a asp-action="Index">Back to list</a>
+    </div>
+</div>
