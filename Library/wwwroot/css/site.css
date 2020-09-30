@@ -111,6 +111,23 @@ body {
     background-color: grey;
 }
 
+#itemTitle {
+    font-size: 2.3em;
+}
+
+#itemAuthor {
+    font-size: 1.6em;
+}
+
+#itemStatus {
+    font-weight: bold;
+    font-size: 1.3em;
+}
+
+#itemType {
+    font-size: 1.6em;
+    color: #888;
+}
 
 .navbar {
     background-color: #19a56f;
