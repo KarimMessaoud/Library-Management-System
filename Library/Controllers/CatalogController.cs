@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Library.Controllers
 {
@@ -20,6 +22,7 @@ namespace Library.Controllers
         private readonly LibraryContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICheckout _checkout;
+        private readonly ILogger<CatalogController> _logger;
 
         public CatalogController(
                         ILibraryAssetService assetsService,
@@ -28,7 +31,8 @@ namespace Library.Controllers
                         ILibraryBranch branch,
                         LibraryContext context,
                         IWebHostEnvironment webHostEnvironment,
-                        ICheckout checkout)
+                        ICheckout checkout,
+                        ILogger<CatalogController> logger)
         {
             _assetsService = assetsService;
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
@@ -36,6 +40,7 @@ namespace Library.Controllers
             _context = context;
             _webHostEnvironment = webHostEnvironment;
             _checkout = checkout;
+            _logger = logger;
         }
 
         [AllowAnonymous]
@@ -392,6 +397,67 @@ namespace Library.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult Delete(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            ViewBag.DecryptedId = decryptedId;
+
+            var asset = _assetsService.GetById(decryptedId);
+
+            if (asset == null)
+            {
+                Response.StatusCode = 404;
+                return View("AssetNotFound", decryptedId);
+            }
+
+            var model = new AssetEditBookViewModel
+            {
+                Id = id,
+                Title = asset.Title,
+                Author = _assetsService.GetAuthorOrDirector(decryptedId),
+                ISBN = _assetsService.GetIsbn(decryptedId),
+                Year = asset.Year,
+                LibraryBranchName = asset.Location.Name
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult DeleteConfirmed(string id)
+        {
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            var book = _assetsService.GetById(decryptedId);
+
+            if (book == null)
+            {
+                Response.StatusCode = 404;
+                return View("AssetNotFound", decryptedId);
+            }
+
+            try
+            {
+                _assetsService.Delete(book);
+                return RedirectToAction("Index");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex.Message);
+                return RedirectToAction(nameof(Delete), new { id = id });
+            }
         }
     }
 }
