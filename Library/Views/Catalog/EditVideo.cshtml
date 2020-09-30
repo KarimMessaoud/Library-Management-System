@@ -1,0 +1,110 @@
+﻿@model Library.Models.Catalog.AssetEditVideoViewModel
+@using LibraryData
+@inject ILibraryBranch  branch
+
+@{
+    ViewBag.Title = "Edit video";
+    var photoPath = Model.ExistingPhotoPath ?? "/images/default.png";
+}
+
+
+@section TopHeaders
+{
+    <h2 class="text-center mt-4">@ViewBag.Title</h2>
+    <hr class="whiteLine" />
+}
+
+<form enctype="multipart/form-data" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="ExistingPhotoPath" type="hidden" />
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center mt-5">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="Director"></label>
+            <input asp-for="Director" class="form-control" />
+            <span asp-validation-for="Director" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="Year"></label>
+            <input asp-for="Year" class="form-control" />
+            <span asp-validation-for="Year" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="Cost"></label>
+            <input asp-for="Cost" class="form-control" />
+            <span asp-validation-for="Cost" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="Photo"></label>
+            <div class="custom-file">
+                <input asp-for="Photo" class="custom-file-input" />
+                <label class="custom-file-label">Click here to change picture</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-4 offset-4 mx-auto text-center">
+            <img class="img-fluid imageThumbnail" src="@photoPath" asp-append-version="true" />
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="NumberOfCopies"></label>
+            <input asp-for="NumberOfCopies" class="form-control" />
+            <span asp-validation-for="NumberOfCopies" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 mx-auto text-center">
+            <label asp-for="LibraryBranchName"></label>
+            <select asp-for="LibraryBranchName" class="form-control">
+                <option value="">Please Select</option>
+                @foreach (var branchName in branch.GetAll())
+                {
+                    <option value="@branchName.Name">@branchName.Name</option>
+                }
+            </select>
+            <span asp-validation-for="LibraryBranchName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mx-auto text-center">
+            <input type="submit" value="Update" class="btn btn-primary" />
+            <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary">Cancel</a>
+        </div>
+    </div>
+
+    @section Scripts
+            {
+        <script>
+            $(document).ready(function () {
+                $('.custom-file-input').on("change", function () {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).next('.custom-file-label').html(fileName);
+                });
+            });
+        </script>
+    }
+</form>

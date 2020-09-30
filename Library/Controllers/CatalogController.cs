@@ -313,5 +313,85 @@ namespace Library.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult EditVideo(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            var asset = _assetsService.GetById(decryptedId);
+
+            if (asset == null)
+            {
+                Response.StatusCode = 404;
+                return View("AssetNotFound", decryptedId);
+            }
+
+            var model = new AssetEditVideoViewModel
+            {
+                Id = id,
+                Title = asset.Title,
+                Director = _assetsService.GetAuthorOrDirector(decryptedId),
+                Year = asset.Year,
+                Cost = asset.Cost,
+                ExistingPhotoPath = asset.ImageUrl,
+                NumberOfCopies = asset.NumberOfCopies,
+                LibraryBranchName = asset.Location.Name
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult EditVideo(AssetEditVideoViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
+
+                var video = _assetsService.GetVideoById(decryptedId);
+
+                if (video == null)
+                {
+                    Response.StatusCode = 404;
+                    return View("AssetNotFound", decryptedId);
+                }
+
+                video.Title = model.Title;
+                video.Director = model.Director;
+                video.Year = model.Year;
+                video.Cost = model.Cost;
+                video.NumberOfCopies = model.NumberOfCopies;
+
+                if (model.Photo != null)
+                {
+                    if (model.ExistingPhotoPath != null)
+                    {
+                        string filePath = Path.Join(_webHostEnvironment.WebRootPath, model.ExistingPhotoPath);
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    string uniqueFileName = ProcessUploadedVideoFile(model);
+
+                    video.ImageUrl = "/images/" + uniqueFileName;
+                }
+
+                video.Location = _branch.GetBranchByName(model.LibraryBranchName);
+
+                _assetsService.Update(video);
+
+                return RedirectToAction("Detail", "Catalog", new { id = model.Id });
+            }
+
+            return View(model);
+        }
     }
 }
