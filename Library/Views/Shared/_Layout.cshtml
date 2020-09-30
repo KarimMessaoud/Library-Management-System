@@ -59,8 +59,15 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Patron" asp-action="Index">Patrons</a>
+                            <a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">Catalog</a>
                         </li>
+
+                        @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Patron" asp-action="Index">Patrons</a>
+                            </li>
+                        }
 
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
@@ -77,6 +84,27 @@
                                        asp-action="RolesList">Roles</a>
                                     <a class="dropdown-item" asp-controller="Account"
                                        asp-action="ChangePassword">Change password</a>
+                                    <a class="dropdown-item" asp-controller="Account"
+                                       asp-action="Register">Register</a>
+                                </div>
+                            </li>
+                        }
+                        else if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#"
+                                   id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    Settings
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-controller="Account"
+                                       asp-action="ChangePassword">Change password</a>
+                                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Patron"))
+                                    {
+                                        <a class="dropdown-item" asp-controller="Patron"
+                                           asp-action="Detail" asp-route-id="@signInManager.UserManager.GetUserId(User)">Profile</a>
+                                    }
                                 </div>
                             </li>
                         }
