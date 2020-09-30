@@ -502,5 +502,21 @@ namespace Library.Controllers
 
             return RedirectToAction("Detail", new { id = assetId });
         }
+
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult CheckIn(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            _checkout.CheckInItem(decryptedId);
+
+            return RedirectToAction("Detail", new { id = id });
+        }
+
     }
 }
