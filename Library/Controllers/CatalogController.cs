@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Hangfire;
 using Library.Models.Catalog;
 using Library.Models.Checkout;
 using Library.Security;
@@ -516,6 +517,72 @@ namespace Library.Controllers
             _checkout.CheckInItem(decryptedId);
 
             return RedirectToAction("Detail", new { id = id });
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Patron")]
+        public IActionResult Hold(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            var asset = _assetsService.GetById(decryptedId);
+
+            if (asset == null)
+            {
+                Response.StatusCode = 404;
+                return View("AssetNotFound", decryptedId);
+            }
+
+            var model = new CheckoutViewModel()
+            {
+                LibraryCardId = "",
+                AssetId = id,
+                Title = asset.Title,
+                ImageUrl = asset.ImageUrl,
+                IsCheckedOut = _checkout.IsCheckedOut(decryptedId),
+                HoldCount = _checkout.GetCurrentHolds(decryptedId).Count()
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Patron")]
+        public IActionResult PlaceHold(string assetId, int libraryCardId)
+
+        {
+            int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
+
+            if (!_checkout.PlaceHold(decryptedId, libraryCardId))
+            {
+                return RedirectToAction("Hold", new { id = assetId });
+            }
+
+            var patron = _context.Users
+                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+
+            var hold = _context.Holds
+                .Include(x => x.LibraryCard)
+                .Include(x => x.LibraryAsset)
+                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == decryptedId);
+
+
+            if (hold.FirstHold == true)
+            {
+                BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(patron.FirstName, patron.Email, "Place hold on the book",
+                "You have placed hold on the asset from our library. " +
+                "Now you have to come to us and take the item in 24 hours time. " +
+                "If you will not take the item up to this time you will not be able to borrow it."));
+            }
+
+
+            return RedirectToAction("Detail", new { id = assetId });
         }
 
     }
