@@ -111,6 +111,11 @@ body {
     background-color: grey;
 }
 
+.imageCell {
+    width: 128px;
+    padding: 10px;
+}
+
 #itemTitle {
     font-size: 2.3em;
 }
