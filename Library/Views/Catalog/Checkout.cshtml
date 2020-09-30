@@ -1,0 +1,39 @@
+﻿@model Library.Models.Checkout.CheckoutViewModel
+
+@{
+    ViewBag.Title = @Model.Title;
+}
+
+
+    <div class="clearfix detailHeading">
+        <h2 class="text-muted text-center">Checkout library item</h2>
+    </div>
+
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="text-center text-dark">
+                    <p id="itemTitle">@Model.Title</p>
+                    <img class="img-fluid" src="@Model.ImageUrl" />
+                </div>
+            </div>
+
+            <div class="col-md-9 mt-3 text-dark">
+                <form method="post" asp-controller="Catalog" asp-action="PlaceCheckout">
+                    <input type="hidden" asp-for="AssetId" />
+                        <div>
+                            Please insert a Library Card ID
+                            <div class="row">
+                                <div class="col-8">
+                                    <input asp-for="LibraryCardId" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <input type="submit" value="Check out" class="btn btn-primary btn-lg" style="width:auto" />
+                            <a asp-action="Detail" asp-route-id="@Model.AssetId" class="btn btn-primary btn-lg">Cancel</a>
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>

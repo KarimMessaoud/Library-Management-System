@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Library.Models.Catalog;
+using Library.Models.Checkout;
 using Library.Security;
 using LibraryData;
 using LibraryData.Models;
@@ -458,6 +459,48 @@ namespace Library.Controllers
                 _logger.LogError(ex.Message);
                 return RedirectToAction(nameof(Delete), new { id = id });
             }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult Checkout(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            var asset = _assetsService.GetById(decryptedId);
+
+            if (asset == null)
+            {
+                Response.StatusCode = 404;
+                return View("AssetNotFound", decryptedId);
+            }
+
+            var model = new CheckoutViewModel()
+            {
+                LibraryCardId = "",
+                AssetId = id,
+                Title = asset.Title,
+                ImageUrl = asset.ImageUrl,
+                IsCheckedOut = _checkout.IsCheckedOut(decryptedId)
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult PlaceCheckout(string assetId, int libraryCardId)
+        {
+            int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
+
+            _checkout.CheckOutItem(decryptedId, libraryCardId);
+
+            return RedirectToAction("Detail", new { id = assetId });
         }
     }
 }
