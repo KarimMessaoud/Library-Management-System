@@ -232,5 +232,86 @@ namespace Library.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult EditBook(string id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+
+            var asset = _assetsService.GetById(decryptedId);
+
+            if (asset == null)
+            {
+                Response.StatusCode = 404;
+                return View("AssetNotFound", decryptedId);
+            }
+
+            var model = new AssetEditBookViewModel
+            {
+                Id = id,
+                Title = asset.Title,
+                Author = _assetsService.GetAuthorOrDirector(decryptedId),
+                ISBN = _assetsService.GetIsbn(decryptedId),
+                Year = asset.Year,
+                Cost = asset.Cost,
+                ExistingPhotoPath = asset.ImageUrl,
+                NumberOfCopies = asset.NumberOfCopies,
+                LibraryBranchName = asset.Location.Name
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult EditBook(AssetEditBookViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
+                var book = _assetsService.GetBookById(decryptedId);
+
+                if (book == null)
+                {
+                    Response.StatusCode = 404;
+                    return View("AssetNotFound", decryptedId);
+                }
+
+                book.Title = model.Title;
+                book.Author = model.Author;
+                book.Year = model.Year;
+                book.ISBN = model.ISBN;
+                book.Cost = model.Cost;
+                book.NumberOfCopies = model.NumberOfCopies;
+
+                if (model.Photo != null)
+                {
+                    if (model.ExistingPhotoPath != null)
+                    {
+                        string filePath = Path.Join(_webHostEnvironment.WebRootPath, model.ExistingPhotoPath);
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    string uniqueFileName = ProcessUploadedBookFile(model);
+
+                    book.ImageUrl = "/images/" + uniqueFileName;
+                }
+
+                book.Location = _branch.GetBranchByName(model.LibraryBranchName);
+
+                _assetsService.Update(book);
+
+                return RedirectToAction("Detail", "Catalog", new { id = model.Id });
+            }
+
+            return View(model);
+        }
     }
 }
