@@ -134,8 +134,21 @@ body {
     color: #888;
 }
 
+.itemLabel {
+    font-weight: bold;
+}
+
+
+.itemValue {
+    font-size: 0.8em;
+}
+
 .strongTd {
     font-weight: bold;
+}
+
+.branchInfo {
+    padding-bottom: 30px;
 }
 
 .navbar {

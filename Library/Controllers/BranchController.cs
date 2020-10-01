@@ -31,5 +31,38 @@ namespace Library.Controllers
 
             return View(model);
         }
+
+        public IActionResult Detail(int? id)
+        {
+            if (id == null)
+            {
+                return View("NoIdFound");
+            }
+
+            var branch = _branch.GetBranchById((int)id);
+
+            if (branch == null)
+            {
+                Response.StatusCode = 404;
+                return View("BranchNotFound", id);
+            }
+
+            var model = new BranchDetailViewModel()
+            {
+                Id = branch.Id,
+                Name = branch.Name,
+                Address = branch.Address,
+                Telephone = branch.Telephone,
+                Description = branch.Description,
+                OpenDate = branch.OpenDate.ToString("yyyy-MM-dd"),
+                NumberOfAssets = _branch.GetAssets((int)id).Count(),
+                NumberOfPatrons = _branch.GetPatrons((int)id).Count(),
+                TotalAssetValue = _branch.GetAssets((int)id).Sum(x => x.Cost),
+                ImageUrl = branch.ImageUrl,
+                HoursOpen = _branch.GetBranchHours((int)id)
+            };
+
+            return View(model);
+        }
     }
 }

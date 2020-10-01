@@ -1,0 +1,65 @@
+﻿@model Library.Models.Branch.BranchDetailViewModel
+
+@{
+    ViewBag.Title = "Branch details";
+}
+
+    <div class="clearfix detailHeading">
+        <h2 class="text-center my-4">@Model.Name</h2>
+    </div>
+
+    <div class="jumbotron">
+        <div class="row branchInfo">
+            <div class="col-sm-7 mx-auto text-dark text-center">
+                <div>
+                    <p>@Model.Description</p>
+                </div>
+            </div>
+        </div>
+        <img class="img-fluid d-block mx-auto" src="@Model.ImageUrl" asp-append-version="true" />
+
+
+
+        <div class="detailInfo mt-4">
+            <table style="margin-left: auto; margin-right: auto">
+                <tr class="text-center">
+                    <td class="itemLabel">Address: </td>
+                    <td class="itemValue">@Model.Address</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="itemLabel">Telephone: </td>
+                    <td class="itemValue">@Model.Telephone</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="itemLabel">Date Opened: </td>
+                    <td class="itemValue">@Model.OpenDate</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="itemLabel">Number Of Patrons: </td>
+                    <td class="itemValue">@Model.NumberOfPatrons</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="itemLabel">Number Of Assets: </td>
+                    <td class="itemValue">@Model.NumberOfAssets</td>
+                </tr>
+                <tr class="text-center">
+                    <td class="itemLabel">Value Of Assets: </td>
+                    <td class="itemValue">@Model.TotalAssetValue</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="row branchInfo mt-4">
+            <div class="col-md-6 mx-auto text-dark text-center">
+                <ul class="list-group">
+                    @foreach (var day in Model.HoursOpen)
+                    {
+                        <li class="list-group-item border-0" style="background-color: #e9ecef">@day</li>
+                    }
+                </ul>
+                <div class="mt-4">
+                    <a asp-action="Index">Back to list</a>
+                </div>
+            </div>
+        </div>
+    </div>
