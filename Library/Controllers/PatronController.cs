@@ -157,6 +157,15 @@ namespace Library.Controllers
                 Response.StatusCode = 404;
                 return View("PatronNotFound", id);
             }
+   
+            // Logged in patron (who is not an Admin and not an Employee) can see only his own profile
+            if (User.IsInRole("Patron") 
+                //&& !User.IsInRole("Admin")
+                //&& !User.IsInRole("Employee")
+                && _userManager.GetUserId(User) != id)
+            {
+                return View("~/Views/Administration/AccessDenied.cshtml");
+            }
 
             var model = new PatronDetailModel()
             {
@@ -192,6 +201,14 @@ namespace Library.Controllers
             {
                 Response.StatusCode = 404;
                 return View("PatronNotFound", id);
+            }
+
+            if (User.IsInRole("Patron")
+                //&& !User.IsInRole("Admin")
+                //&& !User.IsInRole("Employee")
+                && _userManager.GetUserId(User) != id)
+            {
+                return View("~/Views/Administration/AccessDenied.cshtml");
             }
 
             var model = new PatronEditViewModel
