@@ -254,7 +254,7 @@ namespace LibraryService
 
             var userLibraryCardId = _context.Users
                 .Include(x => x.LibraryCard)
-                .FirstOrDefault(x => x.Id == userId).LibraryCard.Id;
+                .FirstOrDefault(x => x.Id == userId).LibraryCard?.Id;
 
             if(userLibraryCardId != libraryCardId)
             {
