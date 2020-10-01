@@ -1,10 +1,12 @@
 ﻿using System.Linq;
 using Library.Models.Branch;
 using LibraryData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Controllers
 {
+    [AllowAnonymous]
     public class BranchController : Controller
     {
         private readonly ILibraryBranch _branch;
