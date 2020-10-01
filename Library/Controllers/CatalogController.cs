@@ -598,5 +598,20 @@ namespace Library.Controllers
 
             return RedirectToAction("Detail", new { id = assetId });
         }
+
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult MarkFound(string assetId)
+        {
+            if (assetId == null)
+            {
+                return View("NoIdFound");
+            }
+
+            int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
+
+            _checkout.MarkFound(decryptedId);
+
+            return RedirectToAction("Detail", new { id = assetId });
+        }
     }
 }
