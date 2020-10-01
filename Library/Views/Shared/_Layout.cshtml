@@ -69,6 +69,10 @@
                             </li>
                         }
 
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Branch" asp-action="Index">Branches</a>
+                        </li>
+
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">

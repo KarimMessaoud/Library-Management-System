@@ -134,6 +134,10 @@ body {
     color: #888;
 }
 
+.strongTd {
+    font-weight: bold;
+}
+
 .navbar {
     background-color: #19a56f;
 }

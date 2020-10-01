@@ -1,0 +1,46 @@
+﻿@model Library.Models.Branch.BranchIndexViewModel
+
+@{ 
+    ViewBag.Title = "Branch list";
+}
+
+@section TopHeaders
+{
+    <h2 class="mt-4 text-center">@ViewBag.Title</h2>
+}
+
+
+<div class="table-responsive mt-5">
+    <table class="table table-borderless text-white text-center">
+        <thead>
+            <tr>
+                <th>Branch name</th>
+                <th>Open now</th>
+                <th>Number of assets</th>
+                <th>Number of patrons</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Branches)
+	        {
+		        <tr>
+                    <td class="strongTd">
+                        <a asp-controller="Branch" asp-action="Detail" asp-route-id="@item.Id">@item.Name</a>
+                    </td>
+                    <td>
+                        @if (item.IsOpen)
+                        {
+                            <p>Open</p>
+                        }
+                        else
+                        {
+                            <p>Closed</p>
+                        }
+                    </td>
+                    <td>@item.NumberOfAssets</td>
+                    <td>@item.NumberOfPatrons</td>
+                </tr>
+	        }
+        </tbody>
+    </table>
+</div>
