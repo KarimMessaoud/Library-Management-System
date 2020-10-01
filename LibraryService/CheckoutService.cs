@@ -246,7 +246,7 @@ namespace LibraryService
                 .First(x => x.Id == id);
 
             var card = _context.LibraryCards
-                .First(x => x.Id == libraryCardId);
+                .FirstOrDefault(x => x.Id == libraryCardId);
 
             //  User who is currently logged in can place hold on an item only for himself
 
