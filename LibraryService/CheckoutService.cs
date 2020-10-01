@@ -185,6 +185,11 @@ namespace LibraryService
                 .Include(x => x.Checkouts)
                 .FirstOrDefault(x => x.Id == libraryCardId);
 
+            if (libraryCard == null)
+            {
+                return;
+            }
+
             var now = DateTime.Now;
 
             var checkout = new Checkout()
