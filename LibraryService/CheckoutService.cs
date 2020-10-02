@@ -248,6 +248,12 @@ namespace LibraryService
             var card = _context.LibraryCards
                 .FirstOrDefault(x => x.Id == libraryCardId);
 
+            //Do not allow user enter libraryCardId that does not exist
+            if(card == null)
+            {
+                return false;
+            }
+
             //  User who is currently logged in can place hold on an item only for himself
 
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
