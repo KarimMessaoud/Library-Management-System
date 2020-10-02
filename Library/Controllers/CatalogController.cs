@@ -520,7 +520,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin, Patron")]
+        [Authorize(Roles = "Patron")]
         public IActionResult Hold(string id)
         {
             if (id == null)
@@ -553,7 +553,7 @@ namespace Library.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Patron")]
+        [Authorize(Roles = "Patron")]
         public IActionResult PlaceHold(string assetId, int libraryCardId)
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
