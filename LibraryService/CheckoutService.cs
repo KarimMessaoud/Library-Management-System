@@ -190,6 +190,15 @@ namespace LibraryService
                 return;
             }
 
+            //In case of libraryCard exists but patron has been deleted,
+            //do not allow to checkout the item
+            var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+
+            if(patron == null)
+            {
+                return;
+            }
+
             var now = DateTime.Now;
 
             var checkout = new Checkout()
@@ -255,7 +264,6 @@ namespace LibraryService
             }
 
             //  User who is currently logged in can place hold on an item only for himself
-
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var userLibraryCardId = _context.Users
