@@ -12,12 +12,22 @@
 
 @if (Model.Any())
 {
-    <div class="col-md-3 mt-5 mb-3 mr-auto">
-        <a asp-controller="Account" asp-action="RegisterEmployee"
-           class="btn btn-primary" style="width:auto">
-            Add new user
-        </a>
-    </div>
+
+ <div class="mt-5">
+        <div class="mr-5 d-inline">
+            <a asp-controller="Account" asp-action="RegisterEmployee"
+               class="btn btn-primary" style="width:auto">
+                Add new employee
+            </a>
+        </div>
+
+        <div class="d-inline">
+            <a asp-controller="Patron" asp-action="Create"
+               class="btn btn-primary" style="width:auto">
+                Add new patron
+            </a>
+        </div>
+  </div>
 
     <div class="table-responsive">
         <table class="table text-white mt-4">
