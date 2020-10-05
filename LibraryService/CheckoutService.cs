@@ -263,6 +263,15 @@ namespace LibraryService
                 return false;
             }
 
+            //In case of libraryCard exists but patron has been deleted,
+            //do not allow to place hold on the item
+            var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+
+            if (patron == null)
+            {
+                return false;
+            }
+
             var signedInUser = _httpContextAccessor.HttpContext.User;
 
             //  If the user who is currently logged in is only a patron, he can place hold on an item only for himself
