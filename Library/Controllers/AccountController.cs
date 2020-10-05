@@ -31,6 +31,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult RegisterEmployee()
         {
             return View();
@@ -54,6 +55,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RegisterEmployee(RegisterEmployeeViewModel model)
         {
             if(ModelState.IsValid)
