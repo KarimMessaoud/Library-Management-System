@@ -115,7 +115,7 @@ namespace Library.Controllers
                     }
 
                     BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(user.FirstName, user.Email, "Email confirmation",
-                        $"Congratulations! You are registered. </br>" +
+                        $"Congratulations! You are registered. </br> This is your libraryCardId: {user.LibraryCard.Id} </br>" +
                         $"<a href= \"{confirmationLink}\">Please confirm your email address " +
                         $"by clicking this text</a>"));
 
@@ -125,9 +125,9 @@ namespace Library.Controllers
                     }
 
                     ViewBag.ErrorTitle = "Registration successful";
-                    ViewBag.ErrorMessage = "Before you can log in,"
-                    + " please confirm your email, by clicking on the confirmation link "
-                    + "we have emailed you.";
+                    ViewBag.ErrorMessage = $"This is your libraryCardId: {user.LibraryCard.Id}. Before you can log in," +
+                    $" please confirm your email, by clicking on the confirmation link " +
+                    $"we have emailed you.";
 
                     return View("~/Views/Account/RegistrationSuccessful.cshtml");
                 }
