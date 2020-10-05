@@ -263,16 +263,21 @@ namespace LibraryService
                 return false;
             }
 
-            //  User who is currently logged in can place hold on an item only for himself
-            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var signedInUser = _httpContextAccessor.HttpContext.User;
 
-            var userLibraryCardId = _context.Users
-                .Include(x => x.LibraryCard)
-                .FirstOrDefault(x => x.Id == userId).LibraryCard?.Id;
-
-            if(userLibraryCardId != libraryCardId)
+            //  If the user who is currently logged in is only a patron, he can place hold on an item only for himself
+            if (signedInUser.IsInRole("Patron") && !signedInUser.IsInRole("Employee") && !signedInUser.IsInRole("Admin"))
             {
-                return false;
+                var userId = signedInUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+                var userLibraryCardId = _context.Users
+                    .Include(x => x.LibraryCard)
+                    .FirstOrDefault(x => x.Id == userId).LibraryCard?.Id;
+
+                if (userLibraryCardId != libraryCardId)
+                {
+                    return false;
+                }
             }
 
             //If the user already has checked the asset out, do not allow him to do this again
