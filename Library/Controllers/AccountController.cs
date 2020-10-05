@@ -31,7 +31,7 @@ namespace Library.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult RegisterEmployee()
         {
             return View();
         }
@@ -54,7 +54,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> RegisterEmployee(RegisterEmployeeViewModel model)
         {
             if(ModelState.IsValid)
             {

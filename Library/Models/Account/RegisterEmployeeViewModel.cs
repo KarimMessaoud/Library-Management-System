@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Library.Models.Account
 {
-    public class RegisterViewModel
+    public class RegisterEmployeeViewModel
     {
         [Required]
         [MinLength(2)]
