@@ -31,7 +31,8 @@
                 <p>This item has been lost. It cannot be checked out.</p>
                 <p><a class="btn btn-lg btn-outline-primary" style="width:auto" role="button" asp-controller="Catalog" asp-action="MarkFound" asp-route-assetId="@Model.AssetId">Mark Item Found</a></p>
             }
-            else if(Model.Status != "Lost" && signInManager.IsSignedIn(User) && (User.IsInRole("Patron")))
+            else if(Model.Status != "Lost" && signInManager.IsSignedIn(User) 
+                && (User.IsInRole("Patron") || User.IsInRole("Employee") || User.IsInRole("Admin")))
             {
                 <p><a class="btn btn-lg btn-outline-primary" style="width:auto" asp-controller="Catalog" asp-action="Hold" asp-route-id="@Model.AssetId">Place Hold</a></p>
             }
