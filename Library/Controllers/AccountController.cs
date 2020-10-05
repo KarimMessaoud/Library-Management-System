@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LibraryData;
 using Hangfire;
 using LibraryData.Models;
+using System.Linq;
 
 namespace Library.Controllers
 {
@@ -88,10 +89,19 @@ namespace Library.Controllers
                     
                     _logger.Log(LogLevel.Warning, confirmationLink);
 
-                    var addToRoleResult = await _userManager.AddToRoleAsync(user, "Employee");
-                    if (!addToRoleResult.Succeeded)
+                    var addToEmployeeRoleResult = await _userManager.AddToRoleAsync(user, "Employee");
+
+                    if (!addToEmployeeRoleResult.Succeeded)
                     {
                         ModelState.AddModelError("", "Cannot add user to the Employee role.");
+                        return View(model);
+                    }
+
+                    var addToPatronRoleResult = await _userManager.AddToRoleAsync(user, "Patron");
+
+                    if (!addToPatronRoleResult.Succeeded)
+                    {
+                        ModelState.AddModelError("", "Cannot add user to the Patron role.");
                         return View(model);
                     }
 
