@@ -8,6 +8,7 @@ using System;
 using System.Threading.Tasks;
 using LibraryData;
 using Hangfire;
+using LibraryData.Models;
 
 namespace Library.Controllers
 {
@@ -16,18 +17,20 @@ namespace Library.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
+        private readonly ILibraryBranch _branch;
 
         public AccountController(UserManager<User> userManager,
                                  SignInManager<User> signInManager,
-                                 ILogger<AccountController> logger)
+                                 ILogger<AccountController> logger,
+                                 ILibraryBranch branch)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _branch = branch;
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
@@ -50,7 +53,6 @@ namespace Library.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -62,6 +64,15 @@ namespace Library.Controllers
                     LastName = model.LastName,
                     UserName = model.Email, 
                     Email = model.Email,
+                    Address = model.Address,
+                    DateOfBirth = model.DateOfBirth,
+                    PhoneNumber = model.Telephone,
+                    LibraryCard = new LibraryCard
+                    {
+                        Fees = 0,
+                        Created = DateTime.Now
+                    },
+                    HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName)
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -74,6 +85,13 @@ namespace Library.Controllers
                         new { userId = user.Id, token = token }, Request.Scheme);
                     
                     _logger.Log(LogLevel.Warning, confirmationLink);
+
+                    var addToRoleResult = await _userManager.AddToRoleAsync(user, "Employee");
+                    if (!addToRoleResult.Succeeded)
+                    {
+                        ModelState.AddModelError("", "Cannot add user to the Employee role.");
+                        return View(model);
+                    }
 
                     BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(user.FirstName, user.Email, "Email confirmation",
                         $"Congratulations! You are registered. </br>" +

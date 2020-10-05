@@ -25,6 +25,22 @@ namespace Library.Models.Account
         [Remote(action: "IsEmailInUse", controller: "Account")]
         public string Email { get; set; }
 
+        [Required]
+        public string Address { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Of Birth")]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        [Display(Name = "Telephone")]
+        public string Telephone { get; set; }
+
+        [Required]
+        [Display(Name = "Home Library Branch Name")]
+        public string HomeLibraryBranchName { get; set; }
+
         [Required]  
         [MinLength(8)] 
         [MaxLength(50)]
