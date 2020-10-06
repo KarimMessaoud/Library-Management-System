@@ -77,7 +77,9 @@
             {
                 <a asp-controller="Patron" asp-action="Index" class="btn btn-primary" style="width:auto">Back to list</a>
             }
-            @if (signInManager.IsSignedIn(User) && User.IsInRole("Patron"))
+            @if (signInManager.IsSignedIn(User) && User.IsInRole("Patron")
+                 && !User.IsInRole("Admin")
+                 && !User.IsInRole("Employee"))
             {
                 <a asp-controller="Patron" asp-action="Detail" asp-route-id="@Model.Id" class="btn btn-primary" style="width:auto">Cancel</a>
             }
