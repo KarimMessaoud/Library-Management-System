@@ -13,7 +13,9 @@
             <a asp-action="Index">Back to list</a>
         }
 
-        @if (signInManager.IsSignedIn(User) && User.IsInRole("Patron"))
+        @if (signInManager.IsSignedIn(User) && User.IsInRole("Patron") 
+            && !User.IsInRole("Admin")
+            && !User.IsInRole("Employee"))
         {
             <a asp-controller="Home" asp-action="Index">Back to Home Page</a>
         }
