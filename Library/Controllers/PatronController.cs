@@ -203,7 +203,10 @@ namespace Library.Controllers
                 return View("PatronNotFound", id);
             }
 
+            // Logged in patron can see only his own profile
             if (User.IsInRole("Patron")
+                && !User.IsInRole("Employee")
+                && !User.IsInRole("Admin")
                 && _userManager.GetUserId(User) != id)
             {
                 return View("~/Views/Administration/AccessDenied.cshtml");
