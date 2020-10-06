@@ -70,7 +70,7 @@ namespace Library.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 listingResult = listingResult
-                    .Where(x => x.Title.ToUpper().Contains(searchString.ToUpper()))
+                    .Where(x => x.Title.ToUpper().Contains(searchString.ToUpper()) || x.AuthorOrDirector.ToUpper().Contains(searchString.ToUpper()))
                     .ToList();
             }
 
@@ -116,6 +116,12 @@ namespace Library.Controllers
                     NumberOfCopies = model.NumberOfCopies,
                     Location = _branch.GetBranchByName(model.LibraryBranchName)
                 };
+
+                //Prevent exceptions when the author of the book is unknown
+                if (book.Author == null)
+                {
+                    book.Author = "-";
+                }
 
                 _assetsService.Add(book);
 
@@ -169,6 +175,12 @@ namespace Library.Controllers
                     NumberOfCopies = model.NumberOfCopies,
                     Location = _branch.GetBranchByName(model.LibraryBranchName)
                 };
+
+                //Prevent exceptions when the director of the video is unknown
+                if (video.Director == null)
+                {
+                    video.Director = "-";
+                }
 
                 _assetsService.Add(video);
 
