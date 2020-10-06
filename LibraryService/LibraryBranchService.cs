@@ -75,7 +75,7 @@ namespace LibraryService
 
             var daysHours = hours.FirstOrDefault(x => x.DayOfWeek == currentDayOfWeek);
 
-            return currentTimeHour < daysHours.OpenTime && currentTimeHour > daysHours.CloseTime;
+            return currentTimeHour >= daysHours.OpenTime && currentTimeHour < daysHours.CloseTime;
         }
     }
 }
