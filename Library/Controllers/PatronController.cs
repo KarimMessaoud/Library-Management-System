@@ -21,17 +21,20 @@ namespace Library.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
+        private readonly ICheckout _checkout;
         public PatronController(IPatron patron,
             ILibraryBranch branch,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            ICheckout checkout)
         {
             _patron = patron;
             _branch = branch;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _checkout = checkout;
         }
 
         [Authorize(Roles = "Admin, Employee")]
@@ -139,6 +142,13 @@ namespace Library.Controllers
             }
 
             return View(model);
+        }
+
+        
+        public IActionResult ChargeFees(string patronId)
+        {
+            _checkout.ChargeOverdueFees(patronId);
+            return RedirectToAction("Detail", new { id = patronId });
         }
 
         [HttpGet]

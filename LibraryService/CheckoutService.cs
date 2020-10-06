@@ -385,5 +385,44 @@ namespace LibraryService
                 .Include(x => x.LibraryCard)
                  .FirstOrDefault(x => x.LibraryAsset.Id == assetId);
         }
+
+        public void ChargeOverdueFees(string patronId)
+        {
+            var signedInUser = _httpContextAccessor.HttpContext.User;
+            if(signedInUser.IsInRole("Patron") 
+                && !signedInUser.IsInRole("Employee") 
+                && !signedInUser.IsInRole("Admin"))
+            {
+                return;
+            }
+
+            var patron = _context.Users
+                .Include(x => x.LibraryCard)
+                .FirstOrDefault(x => x.Id == patronId);
+
+            if(patron == null)
+            {
+                return;
+            }
+
+            var libraryCard = _context.LibraryCards
+                .FirstOrDefault(x => x.Id == patron.LibraryCard.Id);
+
+            var checkouts = _context.Checkouts
+                .Where(x => x.LibraryCard.Id == libraryCard.Id);
+
+            var now = DateTime.Now;
+
+            foreach (var checkout in checkouts)
+            {
+                var redundantDays = (now - checkout.Until).Days;
+                if (redundantDays >= 1)
+                {
+                    _context.Update(libraryCard);
+                    libraryCard.Fees += redundantDays * 2;
+                }
+            }
+            _context.SaveChanges();
+        }
     }
 }

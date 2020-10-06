@@ -20,7 +20,7 @@
             <a asp-controller="Home" asp-action="Index">Back to Home Page</a>
         }
     </div>
-    </div>
+
 
     <div class="jumbotron">
         <div class="row">
@@ -41,7 +41,13 @@
                         {
                             <div id="patronNoFees">No Fees Currently Due.</div>
                         }
-                        <div class="mt-4"><a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit profile</a></div>
+
+                        <div class="mt-4">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit profile</a>
+                            <div>
+                            <a asp-controller="Patron" asp-action="ChargeFees" asp-route-patronId="@Model.Id" class="btn btn-primary mt-3">Charge overdue fees</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
