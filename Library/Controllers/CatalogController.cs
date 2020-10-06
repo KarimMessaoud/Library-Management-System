@@ -117,7 +117,7 @@ namespace Library.Controllers
                     Location = _branch.GetBranchByName(model.LibraryBranchName)
                 };
 
-                //Prevent exceptions when the author of the book is unknown
+                //Prevent exceptions while searching when the author of the book is unknown
                 if (book.Author == null)
                 {
                     book.Author = "-";
@@ -176,7 +176,7 @@ namespace Library.Controllers
                     Location = _branch.GetBranchByName(model.LibraryBranchName)
                 };
 
-                //Prevent exceptions when the director of the video is unknown
+                //Prevent exceptions while searching when the director of the video is unknown
                 if (video.Director == null)
                 {
                     video.Director = "-";
