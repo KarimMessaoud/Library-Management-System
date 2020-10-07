@@ -48,7 +48,7 @@
                             <a asp-controller="Patron" asp-action="ChargeFees" asp-route-patronId="@Model.Id" class="btn btn-outline-primary mt-3">Charge overdue fees</a>
                         </div>
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Employee")
-                            || User.IsInRole("Admin"))
+                          || User.IsInRole("Admin"))
                         {
                             <div>
                                 <a asp-controller="Patron" asp-action="ResetFees" asp-route-patronId="@Model.Id" class="btn btn-outline-primary mt-3">Reset overdue fees</a>

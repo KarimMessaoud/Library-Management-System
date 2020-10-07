@@ -417,12 +417,14 @@ namespace LibraryService
 
             var now = DateTime.Now;
 
+            _context.Update(libraryCard);
+            libraryCard.Fees = 0;
+
             foreach (var checkout in checkouts)
             {
                 var redundantDays = (now - checkout.Until).Days;
                 if (redundantDays >= 1)
                 {
-                    _context.Update(libraryCard);
                     libraryCard.Fees += redundantDays * 2;
                 }
             }
