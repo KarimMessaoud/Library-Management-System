@@ -26,8 +26,8 @@
         <div class="row">
             <div class="col-md-4 patronDetail text-dark">
                 <div>
-                    <h2>@Model.FullName</h2>
-                    <div>
+                    <h2 class = "text-center">@Model.FullName</h2>
+                    <div class = "text-center">
                         <div>Library Card Id: @Model.LibraryCardId</div>
                         <div>Adress: @Model.Address</div>
                         <div>Telephone: @Model.Telephone</div>
@@ -42,12 +42,19 @@
                             <div id="patronNoFees">No Fees Currently Due.</div>
                         }
 
-                        <div class="mt-4">
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit profile</a>
-                            <div>
-                            <a asp-controller="Patron" asp-action="ChargeFees" asp-route-patronId="@Model.Id" class="btn btn-primary mt-3">Charge overdue fees</a>
-                            </div>
+                    <div class="mt-4 text-center">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit profile</a>
+                        <div>
+                            <a asp-controller="Patron" asp-action="ChargeFees" asp-route-patronId="@Model.Id" class="btn btn-outline-primary mt-3">Charge overdue fees</a>
                         </div>
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Employee")
+                            || User.IsInRole("Admin"))
+                        {
+                            <div>
+                                <a asp-controller="Patron" asp-action="ResetFees" asp-route-patronId="@Model.Id" class="btn btn-outline-primary mt-3">Reset overdue fees</a>
+                            </div>
+                        }
+                    </div>
                     </div>
                 </div>
             </div>

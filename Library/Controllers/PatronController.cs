@@ -150,6 +150,13 @@ namespace Library.Controllers
             return RedirectToAction("Detail", new { id = patronId });
         }
 
+        [Authorize(Roles = "Admin, Employee")]
+        public IActionResult ResetFees(string patronId)
+        {
+            _checkout.ResetOverdueFees(patronId);
+            return RedirectToAction("Detail", new { id = patronId });
+        }
+
         [HttpGet]
         [Authorize(Roles = "Admin, Employee, Patron")]
         public async Task<IActionResult> Detail(string id)

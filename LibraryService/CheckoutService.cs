@@ -427,5 +427,28 @@ namespace LibraryService
             }
             _context.SaveChanges();
         }
+
+        public void ResetOverdueFees(string patronId)
+        {
+            var patron = _context.Users
+                .Include(x => x.LibraryCard)
+                .FirstOrDefault(x => x.Id == patronId);
+
+            if (patron == null)
+            {
+                return;
+            }
+
+            var libraryCard = _context.LibraryCards
+                .FirstOrDefault(x => x.Id == patron.LibraryCard.Id);
+
+            if (libraryCard.Fees > 0)
+            {
+                _context.Update(libraryCard);
+                libraryCard.Fees = 0;
+                _context.SaveChanges();
+            }
+            else return;
+        }
     }
 }

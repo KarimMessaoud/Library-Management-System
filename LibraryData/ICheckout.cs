@@ -25,5 +25,6 @@ namespace LibraryData
         void MarkLost(int assetId);
         void MarkFound(int assetId);
         void ChargeOverdueFees(string patronId);
+        void ResetOverdueFees(string patronId);
     }
 }
