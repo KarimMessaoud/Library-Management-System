@@ -1,5 +1,7 @@
 ﻿@model string
 
+@inject SignInManager<User> signInManager
+
 @{
     ViewBag.Title = "404 Error";
 }
@@ -12,7 +14,10 @@
     </h5>
 </div>
 
-<div class="text-center">
-    <a asp-controller="Patron" asp-action="Index" class="btn btn-outline-success"
-       style="width:auto">Click here to see the list of all patrons</a>
-</div>
+@if (signInManager.IsSignedIn(User) && (User.IsInRole("Employee") || User.IsInRole("Admin")))
+{
+    <div class="text-center">
+        <a asp-controller="Patron" asp-action="Index" class="btn btn-outline-success"
+           style="width:auto">Click here to see the list of all patrons</a>
+    </div>
+}
