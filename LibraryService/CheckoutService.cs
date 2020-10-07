@@ -388,6 +388,7 @@ namespace LibraryService
 
         public void ChargeOverdueFees(string patronId)
         {
+            //User who is only a patron cannot charge fees in somebody's behalf
             var signedInUser = _httpContextAccessor.HttpContext.User;
             var signedInUserId = signedInUser.FindFirstValue(ClaimTypes.NameIdentifier);
 
