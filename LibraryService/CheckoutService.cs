@@ -389,9 +389,12 @@ namespace LibraryService
         public void ChargeOverdueFees(string patronId)
         {
             var signedInUser = _httpContextAccessor.HttpContext.User;
+            var signedInUserId = signedInUser.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if(signedInUser.IsInRole("Patron") 
                 && !signedInUser.IsInRole("Employee") 
-                && !signedInUser.IsInRole("Admin"))
+                && !signedInUser.IsInRole("Admin")
+                && signedInUserId != patronId)
             {
                 return;
             }

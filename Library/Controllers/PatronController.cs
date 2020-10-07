@@ -144,7 +144,6 @@ namespace Library.Controllers
             return View(model);
         }
 
-        
         public IActionResult ChargeFees(string patronId)
         {
             _checkout.ChargeOverdueFees(patronId);
