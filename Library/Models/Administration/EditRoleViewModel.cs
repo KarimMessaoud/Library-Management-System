@@ -9,7 +9,6 @@ namespace Library.Models.Administration
 
         [Required(ErrorMessage= "Role name is required")]
         [Display(Name="Role name")]
-
         [MinLength(2)]
         public string RoleName { get; set; }
         public List<string> Users { get; set; } = new List<string>();

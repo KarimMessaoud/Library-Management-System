@@ -188,6 +188,13 @@ namespace Library.Controllers
                 return View("NotFound");
             }
 
+            //Do not allow to remove any user from the patron role
+            if (role.Name == "Patron" && model.Any(x => x.IsSelected == false))
+            {
+                ModelState.AddModelError("", "You cannot remove any user from the patron role!");
+                return View(model);
+            }
+
             for (int i = 0; i < model.Count; i++)
             {
                 var user = await _userManager.FindByIdAsync(model[i].UserId);
