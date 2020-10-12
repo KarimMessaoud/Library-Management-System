@@ -1,9 +1,11 @@
 ﻿using Hangfire;
 using Library.Models.Patron;
+using Library.Security;
 using LibraryData;
 using LibraryData.Models;
 using LibraryData.Models.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,12 +24,15 @@ namespace Library.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
         private readonly ICheckout _checkout;
+        private readonly IDataProtector protector;
         public PatronController(IPatron patron,
             ILibraryBranch branch,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ILogger<AccountController> logger,
-            ICheckout checkout)
+            ICheckout checkout,
+            IDataProtectionProvider dataProtectionProvider,
+            DataProtectionPurposeStrings dataProtectionPurposeStrings)
         {
             _patron = patron;
             _branch = branch;
@@ -35,6 +40,7 @@ namespace Library.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _checkout = checkout;
+            protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
         }
 
         [Authorize(Roles = "Admin, Employee")]
@@ -198,6 +204,13 @@ namespace Library.Controllers
                 CheckoutHistory = await _patron.GetCheckoutHistory(id),
                 Holds = await _patron.GetHolds(id)
             };
+
+            //Encrypt Library Assets' Ids in order to be able to get to details of the checkout items
+            //from Patron's detail view  
+            foreach (var item in model.AssetsCheckedOut)
+            {
+                item.LibraryAsset.EncryptedId = protector.Protect(item.LibraryAsset.Id.ToString());
+            }
 
             return View(model);
         }

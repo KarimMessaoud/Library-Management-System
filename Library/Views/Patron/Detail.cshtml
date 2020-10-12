@@ -68,7 +68,7 @@
                             @foreach (var checkout in Model.AssetsCheckedOut)
                             {
                                 <li>
-                                    @checkout.LibraryAsset.Title - (Library Asset Id: @checkout.LibraryAsset.Id)
+                                    <a asp-controller="Catalog" asp-action="Detail" asp-route-id="@checkout.LibraryAsset.EncryptedId">@checkout.LibraryAsset.Title</a> - (Library Asset Id: @checkout.LibraryAsset.Id)
                                     <ul>
                                         <li>
                                             Since: @checkout.Since
