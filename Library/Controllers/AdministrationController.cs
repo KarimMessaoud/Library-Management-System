@@ -451,6 +451,15 @@ namespace Library.Controllers
         [HttpPost]
         public async Task<IActionResult> ManageUserRoles(List<ManageUserRolesViewModel> model, string userId)
         {
+            //Do not allow uncheck the patron role
+            var patronRoleItem = model.FirstOrDefault(x => x.RoleName == "Patron");
+
+            if (patronRoleItem.IsSelected == false)
+            {
+                ModelState.AddModelError("", "You cannot remove the patron role!");
+                return View(model);
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)

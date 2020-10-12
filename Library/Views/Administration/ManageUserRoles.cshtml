@@ -14,14 +14,27 @@
         <p>If you want the role to be assigned to the given user, check the checkbox, otherwise leave it unchecked.</p>
     </div>
     <div class="card-body">
-        @for (int i=0; i<Model.Count; i++)
+        @for (int i = 0; i < Model.Count; i++)
         {
-        <div class="form-check m-1">
-            <input type="hidden" asp-for="@Model[i].RoleId"/> 
-            <input type="hidden" asp-for="@Model[i].RoleName"/> 
-            <input asp-for="@Model[i].IsSelected" class="form-check-input" />
-            <label asp-for="@Model[i].IsSelected" class="form-check-label">@Model[i].RoleName</label>
-        </div>
+            @if (Model[i].RoleName == "Patron")
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model[i].RoleId" />
+                    <input type="hidden" asp-for="@Model[i].RoleName" />
+                    <input type="hidden" asp-for="@Model[i].IsSelected" class="form-check-input" />
+                    <input asp-for="@Model[i].IsSelected" class="form-check-input" disabled />
+                    <label asp-for="@Model[i].IsSelected" class="form-check-label">@Model[i].RoleName</label>
+                </div>
+            }
+            else
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model[i].RoleId" />
+                    <input type="hidden" asp-for="@Model[i].RoleName" />
+                    <input asp-for="@Model[i].IsSelected" class="form-check-input" />
+                    <label asp-for="@Model[i].IsSelected" class="form-check-label">@Model[i].RoleName</label>
+                </div>
+            }
         }
         <div asp-validation-summary="All" class="text-danger"></div>
     </div>
