@@ -9,6 +9,7 @@ using LibraryData;
 using LibraryData.Models.Account;
 using LibraryService;
 using LibraryService.EmailConfiguration;
+using LibraryService.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -80,6 +81,8 @@ namespace Library
                 options.UseSqlServerStorage(Configuration.GetConnectionString("LibraryConnection"));
             });
 
+            services.AddScoped<IWaitingHoldsProcessingTask, WaitingHoldsProcessingTask>();
+
             services.Configure<DataProtectionTokenProviderOptions>(x =>
             x.TokenLifespan = TimeSpan.FromHours(5));
 
@@ -112,6 +115,7 @@ namespace Library
 
             app.UseHangfireDashboard();
             app.UseHangfireServer();
+            RecurringJob.AddOrUpdate<WaitingHoldsProcessingTask>(x => x.Execute(), Cron.Hourly);
 
             app.UseEndpoints(endpoints =>
             {
