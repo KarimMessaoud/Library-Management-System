@@ -16,7 +16,6 @@ namespace LibraryService.Tasks
 
         public void Execute()
         {
-
             var holds = _context.Holds
                 .Include(x => x.LibraryAsset)
                 .Include(x => x.LibraryCard)

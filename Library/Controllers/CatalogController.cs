@@ -587,7 +587,7 @@ namespace Library.Controllers
             if (hold.FirstHold == true)
             {
                 BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(patron.FirstName, patron.Email, "Place hold on the book",
-                "You have placed hold on the asset from our library. " +
+                $"You have placed hold on the asset: '{hold.LibraryAsset.Title}' from our library. " +
                 "Now you have to come to us and take the item in 24 hours time. " +
                 "If you will not take the item up to this time you will not be able to borrow it."));
             }
