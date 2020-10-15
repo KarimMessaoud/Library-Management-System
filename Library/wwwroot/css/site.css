@@ -93,6 +93,10 @@ body {
         color: black;
     }
 
+.branchInfo {
+    padding-bottom: 30px;
+}
+
 .detailInfo {
     padding: 10px;
     font-size: 1.3em;
@@ -147,10 +151,6 @@ body {
     font-weight: bold;
 }
 
-.branchInfo {
-    padding-bottom: 30px;
-}
-
 .navbar {
     background-color: #19a56f;
 }
@@ -165,6 +165,9 @@ body {
     font-weight: bold;
 }
 
+.container .whiteLine {
+    border-top: 1px solid white;
+}
 
 @media(max-width: 767px) {
 
@@ -175,8 +178,4 @@ body {
     .patronDetail {
         text-align: center;
     }
-}
-
-.container .whiteLine {
-    border-top: 1px solid white;
 }
