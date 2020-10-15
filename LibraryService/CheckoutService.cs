@@ -162,6 +162,12 @@ namespace LibraryService
         {
             var asset = _assetService.GetById(assetId);
             var earliestHold = currentHolds.OrderBy(x => x.HoldPlaced).FirstOrDefault();
+
+            // Change FirstHold property in order for the patron who has placed hold
+            // to receive email if he will not take the item in 24 hours time
+            _context.Update(earliestHold);
+            earliestHold.FirstHold = true;
+
             var cardId = earliestHold.LibraryCard.Id;
             var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == cardId);
             BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(patron.FirstName, patron.Email, "Library item is free to borrow",
@@ -306,11 +312,13 @@ namespace LibraryService
             //If the user already has placed hold on the asset, do not allow him to do this again
             var currentHolds = _context.Holds
                 .Include(x => x.LibraryAsset)
-                .Include(x => x.LibraryCard);
+                .Include(x => x.LibraryCard)
+                .Where(x => x.LibraryAsset.Id == id);
 
-            var isOnHoldByUser = currentHolds.FirstOrDefault(x => x.LibraryAsset.Id == id && x.LibraryCard.Id == libraryCardId);
+            var currentUserHolds = currentHolds
+                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
 
-            if (isOnHoldByUser != null) return false;
+            if (currentUserHolds != null) return false;
 
             var hold = new Hold()
             {
@@ -327,10 +335,9 @@ namespace LibraryService
                 hold.FirstHold = true;
                 asset.Status = _context.Statuses.FirstOrDefault(x => x.Name == "On Hold");
             }
-            
+
             _context.Add(hold);
             _context.SaveChanges();
-
 
             return true;
         }
