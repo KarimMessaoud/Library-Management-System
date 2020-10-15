@@ -56,21 +56,21 @@
 
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">Catalog</a>
+                            <a class="nav-link" asp-controller="Catalog" asp-action="Index">Catalog</a>
                         </li>
 
                         @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee")))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Patron" asp-action="Index">Patrons</a>
+                                <a class="nav-link" asp-controller="Patron" asp-action="Index">Patrons</a>
                             </li>
                         }
 
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Branch" asp-action="Index">Branches</a>
+                            <a class="nav-link" asp-controller="Branch" asp-action="Index">Branches</a>
                         </li>
 
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
