@@ -61,17 +61,15 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Catalog" asp-action="Index">Catalog</a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Branch" asp-action="Index">Branches</a>
+                        </li>
                         @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Employee")))
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Patron" asp-action="Index">Patrons</a>
                             </li>
                         }
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Branch" asp-action="Index">Branches</a>
-                        </li>
 
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
