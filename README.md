@@ -93,6 +93,7 @@ According to their role, they have different tasks and rights.
 <h6>After running application:</h6>
 	<ul>
 		<li>Sign in as Admin, Employee or Patron using the below fictional users.</li>
+		<li>In order to check out an item or place hold on it use library Card Id of a user.</li>
 	</ul>
 
 <h6>If you want to see how emails are sending:</h6>
@@ -113,8 +114,15 @@ According to their role, they have different tasks and rights.
 
 <b>Admin</b></br>
 email: admin@oetl.pl</br>
-password: Demo123$
+password: Demo123$</br>
+library card Id: 1048
 
 <b>Employee</b></br>
 email: employee@oetl.pl</br>
-password: Demo123$
+password: Demo123$</br>
+library card Id: 1049
+
+<b>Patron</b></br>
+email: patron@oetl.pl</br>
+password: Demo123$</br>
+library card Id: 1050
