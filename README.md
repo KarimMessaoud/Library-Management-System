@@ -110,6 +110,7 @@ According to their role, they have different tasks and rights.
         <li>In the top navigation bar click Manage -> Users -> Add new patron or Add new employee</li>
       </ul>
 	</li>
+	<li>If email sending does not work go to the Less secure app access section of your Google Account and turn Allow less secure apps on</li>
 </ul>
 
 <b>Admin</b></br>
