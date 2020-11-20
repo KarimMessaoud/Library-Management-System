@@ -302,6 +302,17 @@ namespace Library.Controllers
                 return View("PatronNotFound", id);
             }
 
+            //Check if there are any items that were checked out by the patron and not turned back. 
+            // If so do not allow to delete this patron.
+            var checkouts = _patron.GetCheckouts(id);
+
+            var holds = _patron.GetHolds(id);
+
+            if (checkouts.Result.Any() || holds.Result.Any())
+            {
+                return View("CannotDeletePatron", id);
+            }
+
             var model = new PatronEditViewModel
             {
                 Id = patron.Id,

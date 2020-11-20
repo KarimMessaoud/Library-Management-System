@@ -1,0 +1,24 @@
+﻿@model string
+
+@inject SignInManager<User> signInManager
+
+@{
+    ViewBag.Title = "404 Error";
+}
+
+<div class="alert alert-danger text-center mt-4 mb-4">
+    <h4>404 Not Found Error :</h4>
+    <hr />
+    <h5>
+        Patron with ID = @Model cannot be deleted. 
+        There are some items that he has checked out or has placed hold on them.
+    </h5>
+</div>
+
+@if (signInManager.IsSignedIn(User) && (User.IsInRole("Employee") || User.IsInRole("Admin")))
+{
+    <div class="text-center">
+        <a asp-controller="Patron" asp-action="Index" class="btn btn-outline-success"
+           style="width:auto">Click here to see the list of all patrons</a>
+    </div>
+}
