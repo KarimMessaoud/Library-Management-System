@@ -310,7 +310,7 @@ namespace Library.Controllers
 
             if (checkouts.Result.Any() || holds.Result.Any())
             {
-                return View("CannotDeletePatron", id);
+                return View("DeletingForbidden", id);
             }
 
             var model = new PatronEditViewModel
