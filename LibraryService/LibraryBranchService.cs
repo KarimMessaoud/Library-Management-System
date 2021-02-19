@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LibraryService
 {
@@ -16,9 +17,9 @@ namespace LibraryService
             _context = context;
         }
 
-        public void Add(LibraryBranch newBranch)
+        public async Task AddAsync(LibraryBranch newBranch)
         {
-            _context.Add(newBranch);
+            await _context.AddAsync(newBranch);
             _context.SaveChanges();
         }
 

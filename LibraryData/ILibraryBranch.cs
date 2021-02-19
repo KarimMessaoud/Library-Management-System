@@ -1,6 +1,7 @@
 ﻿using LibraryData.Models;
 using LibraryData.Models.Account;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryData
 {
@@ -12,7 +13,7 @@ namespace LibraryData
         IEnumerable<string> GetBranchHours(int branchId);
         LibraryBranch GetBranchById(int branchId);
         LibraryBranch GetBranchByName(string branchName);
-        void Add(LibraryBranch newBranch);
+        Task AddAsync(LibraryBranch newBranch);
         bool IsBranchOpen(int branchId);
     }
 }
