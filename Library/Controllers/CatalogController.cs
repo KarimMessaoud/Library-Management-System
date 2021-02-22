@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Hangfire;
 using Library.Models.Catalog;
 using Library.Models.Checkout;
@@ -98,7 +99,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult CreateBook(AssetCreateBookViewModel model)
+        public async Task<IActionResult> CreateBook(AssetCreateBookViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -123,7 +124,7 @@ namespace Library.Controllers
                     book.Author = "-";
                 }
 
-                _assetsService.Add(book);
+                await _assetsService.AddAsync(book);
 
                 return RedirectToAction("Create", "Catalog");
             }
@@ -158,7 +159,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult CreateVideo(AssetCreateVideoViewModel model)
+        public async Task<IActionResult> CreateVideo(AssetCreateVideoViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -182,7 +183,7 @@ namespace Library.Controllers
                     video.Director = "-";
                 }
 
-                _assetsService.Add(video);
+                await _assetsService.AddAsync(video);
 
                 return RedirectToAction("Create", "Catalog");
             }

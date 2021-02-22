@@ -3,6 +3,7 @@ using LibraryData.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace LibraryService
 {
@@ -15,10 +16,10 @@ namespace LibraryService
             _context = context;
         }
 
-        public void Add(LibraryAsset newAsset)
+        public async Task AddAsync(LibraryAsset newAsset)
         {
-            _context.LibraryAssets.Add(newAsset);
-            _context.SaveChanges();
+            await _context.LibraryAssets.AddAsync(newAsset);
+            await _context.SaveChangesAsync();
         }
 
         public void Update(LibraryAsset newAsset)

@@ -1,5 +1,6 @@
 ﻿using LibraryData.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryData
 {
@@ -10,7 +11,7 @@ namespace LibraryData
         Book GetBookById(int id);
         Video GetVideoById(int id);
 
-        void Add(LibraryAsset newAsset);
+        Task AddAsync(LibraryAsset newAsset);
         void Update(LibraryAsset newAsset);
         void Delete(LibraryAsset newAsset);
         string GetAuthorOrDirector(int id);
