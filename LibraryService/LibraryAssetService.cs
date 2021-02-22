@@ -28,10 +28,10 @@ namespace LibraryService
             await _context.SaveChangesAsync();
         }
 
-        public void Delete(LibraryAsset newAsset)
+        public async Task DeleteAsync(LibraryAsset newAsset)
         {
             _context.LibraryAssets.Remove(newAsset);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public IEnumerable<LibraryAsset> GetAll()

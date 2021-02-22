@@ -451,7 +451,7 @@ namespace Library.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
@@ -465,7 +465,7 @@ namespace Library.Controllers
 
             try
             {
-                _assetsService.Delete(book);
+                await _assetsService.DeleteAsync(book);
                 return RedirectToAction("Index");
             }
             catch (DbUpdateException ex)

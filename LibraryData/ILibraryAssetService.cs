@@ -13,7 +13,7 @@ namespace LibraryData
 
         Task AddAsync(LibraryAsset newAsset);
         Task UpdateAsync(LibraryAsset newAsset);
-        void Delete(LibraryAsset newAsset);
+        Task DeleteAsync(LibraryAsset newAsset);
         string GetAuthorOrDirector(int id);
         string GetType(int id);
         string GetTitle(int id);
