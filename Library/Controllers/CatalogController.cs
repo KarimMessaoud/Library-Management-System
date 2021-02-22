@@ -291,7 +291,7 @@ namespace Library.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult EditBook(AssetEditBookViewModel model)
+        public async Task<IActionResult> EditBook(AssetEditBookViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -326,7 +326,7 @@ namespace Library.Controllers
 
                 book.Location = _branch.GetBranchByName(model.LibraryBranchName);
 
-                _assetsService.Update(book);
+                await _assetsService.UpdateAsync(book);
 
                 return RedirectToAction("Detail", "Catalog", new { id = model.Id });
             }
@@ -371,7 +371,7 @@ namespace Library.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult EditVideo(AssetEditVideoViewModel model)
+        public async Task<IActionResult> EditVideo(AssetEditVideoViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -406,7 +406,7 @@ namespace Library.Controllers
 
                 video.Location = _branch.GetBranchByName(model.LibraryBranchName);
 
-                _assetsService.Update(video);
+                await _assetsService.UpdateAsync(video);
 
                 return RedirectToAction("Detail", "Catalog", new { id = model.Id });
             }

@@ -22,10 +22,10 @@ namespace LibraryService
             await _context.SaveChangesAsync();
         }
 
-        public void Update(LibraryAsset newAsset)
+        public async Task UpdateAsync(LibraryAsset newAsset)
         {
             _context.LibraryAssets.Update(newAsset);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void Delete(LibraryAsset newAsset)

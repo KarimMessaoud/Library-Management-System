@@ -12,7 +12,7 @@ namespace LibraryData
         Video GetVideoById(int id);
 
         Task AddAsync(LibraryAsset newAsset);
-        void Update(LibraryAsset newAsset);
+        Task UpdateAsync(LibraryAsset newAsset);
         void Delete(LibraryAsset newAsset);
         string GetAuthorOrDirector(int id);
         string GetType(int id);
