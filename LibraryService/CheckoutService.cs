@@ -71,7 +71,7 @@ namespace LibraryService
                 .OrderByDescending(x => x.Since)
                 .FirstOrDefault();
         }
-        public void MarkFound(int assetId)
+        public async Task MarkFoundAsync(int assetId)
         {
             var now = DateTime.Now;
 
@@ -83,7 +83,7 @@ namespace LibraryService
             // close any existing checkout history
             CloseExistingCheckouts(assetId, now);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         private void UpdateAssetStatus(int assetId, string newStatus)

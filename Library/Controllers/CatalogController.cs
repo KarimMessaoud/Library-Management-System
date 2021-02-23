@@ -613,7 +613,7 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult MarkFound(string assetId)
+        public async Task<IActionResult> MarkFoundAsync(string assetId)
         {
             if (assetId == null)
             {
@@ -622,7 +622,7 @@ namespace Library.Controllers
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
 
-            _checkout.MarkFound(decryptedId);
+            await _checkout.MarkFoundAsync(decryptedId);
 
             return RedirectToAction("Detail", new { id = assetId });
         }

@@ -24,7 +24,7 @@ namespace LibraryData
         void CheckInItem(int assetId);
         bool PlaceHold(int assetId, int libraryCardId);
         void MarkLost(int assetId);
-        void MarkFound(int assetId);
+        Task MarkFoundAsync(int assetId);
         void ChargeOverdueFees(string patronId);
         void ResetOverdueFees(string patronId);
     }
