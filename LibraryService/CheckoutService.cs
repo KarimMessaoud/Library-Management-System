@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LibraryService
 {
@@ -32,10 +33,10 @@ namespace LibraryService
             _assetService = assetService;
         }
 
-        public void Add(Checkout newCheckout)
+        public async Task AddAsync(Checkout newCheckout)
         {
-            _context.Add(newCheckout);
-            _context.SaveChanges();
+            await _context.AddAsync(newCheckout);
+            await _context.SaveChangesAsync();
         }
 
         public IEnumerable<Checkout> GetAll()

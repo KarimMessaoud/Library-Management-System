@@ -1,12 +1,13 @@
 ﻿using LibraryData.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibraryData
 {
     public interface ICheckout
     {
-        void Add(Checkout newCheckout);
+        Task AddAsync(Checkout newCheckout);
         IEnumerable<Checkout> GetAll();
         IEnumerable<CheckoutHistory> GetCheckoutHistory(int id);
         IEnumerable<Hold> GetCurrentHolds(int id);
