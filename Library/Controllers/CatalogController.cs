@@ -210,7 +210,7 @@ namespace Library.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Detail(string id)
+        public async Task<IActionResult> Detail(string id)
         {
             if (id == null)
             {
@@ -239,7 +239,7 @@ namespace Library.Controllers
                 AuthorOrDirector = _assetsService.GetAuthorOrDirector(decryptedId),
                 Type = _assetsService.GetType(decryptedId),
                 Year = asset.Year,
-                ISBN = _assetsService.GetIsbn(decryptedId),
+                ISBN = await _assetsService.GetIsbnAsync(decryptedId),
                 Status = asset.Status.Name,
                 Cost = asset.Cost,
                 CurrentLocation = _assetsService.GetCurrentLocation(decryptedId).Name,
@@ -255,7 +255,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult EditBook(string id)
+        public async Task<IActionResult> EditBook(string id)
         {
             if (id == null)
             {
@@ -277,7 +277,7 @@ namespace Library.Controllers
                 Id = id,
                 Title = asset.Title,
                 Author = _assetsService.GetAuthorOrDirector(decryptedId),
-                ISBN = _assetsService.GetIsbn(decryptedId),
+                ISBN = await _assetsService.GetIsbnAsync(decryptedId),
                 Year = asset.Year,
                 Cost = asset.Cost,
                 ExistingPhotoPath = asset.ImageUrl,
@@ -416,7 +416,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -440,7 +440,7 @@ namespace Library.Controllers
                 Id = id,
                 Title = asset.Title,
                 Author = _assetsService.GetAuthorOrDirector(decryptedId),
-                ISBN = _assetsService.GetIsbn(decryptedId),
+                ISBN = await _assetsService.GetIsbnAsync(decryptedId),
                 Year = asset.Year,
                 LibraryBranchName = asset.Location.Name
             };
