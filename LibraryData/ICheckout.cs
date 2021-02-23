@@ -23,7 +23,7 @@ namespace LibraryData
         void CheckOutItem(int assetId, int libraryCardId);
         void CheckInItem(int assetId);
         bool PlaceHold(int assetId, int libraryCardId);
-        void MarkLost(int assetId);
+        Task MarkLostAsync(int assetId);
         Task MarkFoundAsync(int assetId);
         void ChargeOverdueFees(string patronId);
         void ResetOverdueFees(string patronId);

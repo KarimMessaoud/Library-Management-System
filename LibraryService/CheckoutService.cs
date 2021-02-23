@@ -116,10 +116,10 @@ namespace LibraryService
             }
         }
 
-        public void MarkLost(int assetId)
+        public async Task MarkLostAsync(int assetId)
         {
             UpdateAssetStatus(assetId, "Lost");
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void CheckInItem(int assetId)
