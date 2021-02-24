@@ -122,7 +122,7 @@ namespace LibraryService
             await _context.SaveChangesAsync();
         }
 
-        public void CheckInItem(int assetId)
+        public async Task CheckInItemAsync(int assetId)
         {
             var now = DateTime.Now;
             var item = _context.LibraryAssets.FirstOrDefault(x => x.Id == assetId);
@@ -142,13 +142,13 @@ namespace LibraryService
             // if there are any holds on the item 
             //send email to the patron with the earliest hold
 
-            if (currentHolds.Any())
+            if (await currentHolds.AnyAsync())
             {
                 SendEmailToEarliestHoldPatron(assetId, currentHolds);
 
                 UpdateAssetStatus(assetId, "On Hold");
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return;
             }
@@ -168,7 +168,7 @@ namespace LibraryService
             // to receive email if he will not take the item in 24 hours time
             _context.Update(earliestHold);
             earliestHold.FirstHold = true;
-
+            
             var cardId = earliestHold.LibraryCard.Id;
             var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == cardId);
             BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(patron.FirstName, patron.Email, "Library item is free to borrow",

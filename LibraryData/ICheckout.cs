@@ -21,7 +21,7 @@ namespace LibraryData
         bool IsCheckedOut(int assetId);
 
         void CheckOutItem(int assetId, int libraryCardId);
-        void CheckInItem(int assetId);
+        Task CheckInItemAsync(int assetId);
         bool PlaceHold(int assetId, int libraryCardId);
         Task MarkLostAsync(int assetId);
         Task MarkFoundAsync(int assetId);

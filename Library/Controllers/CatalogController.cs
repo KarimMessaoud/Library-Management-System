@@ -518,7 +518,7 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult CheckIn(string id)
+        public async Task<IActionResult> CheckInAsync(string id)
         {
             if (id == null)
             {
@@ -527,7 +527,7 @@ namespace Library.Controllers
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
-            _checkout.CheckInItem(decryptedId);
+            await _checkout.CheckInItemAsync(decryptedId);
 
             return RedirectToAction("Detail", new { id = id });
         }
