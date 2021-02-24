@@ -477,7 +477,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult Checkout(string id)
+        public async Task<IActionResult> CheckoutAsync(string id)
         {
             if (id == null)
             {
@@ -500,7 +500,7 @@ namespace Library.Controllers
                 AssetId = id,
                 Title = asset.Title,
                 ImageUrl = asset.ImageUrl,
-                IsCheckedOut = _checkout.IsCheckedOut(decryptedId)
+                IsCheckedOut = await _checkout.IsCheckedOutAsync(decryptedId)
             };
 
             return View(model);
@@ -508,11 +508,11 @@ namespace Library.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult PlaceCheckout(string assetId, int libraryCardId)
+        public async Task<IActionResult> PlaceCheckoutAsync(string assetId, int libraryCardId)
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
 
-            _checkout.CheckOutItem(decryptedId, libraryCardId);
+            await _checkout.CheckOutItemAsync(decryptedId, libraryCardId);
 
             return RedirectToAction("Detail", new { id = assetId });
         }
@@ -534,7 +534,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Patron, Employee, Admin")]
-        public IActionResult Hold(string id)
+        public async Task<IActionResult> HoldAsync(string id)
         {
             if (id == null)
             {
@@ -557,7 +557,7 @@ namespace Library.Controllers
                 AssetId = id,
                 Title = asset.Title,
                 ImageUrl = asset.ImageUrl,
-                IsCheckedOut = _checkout.IsCheckedOut(decryptedId),
+                IsCheckedOut = await _checkout.IsCheckedOutAsync(decryptedId),
                 HoldCount = _checkout.GetCurrentHolds(decryptedId).Count()
             };
 

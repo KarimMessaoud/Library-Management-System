@@ -18,9 +18,9 @@ namespace LibraryData
         string GetCurrentCheckoutPatron(int assetId);
         string GetCurrentHoldPatronName(int id);
         DateTime GetCurrentHoldPlaced(int id);
-        bool IsCheckedOut(int assetId);
+        Task<bool> IsCheckedOutAsync(int assetId);
 
-        void CheckOutItem(int assetId, int libraryCardId);
+        Task CheckOutItemAsync(int assetId, int libraryCardId);
         Task CheckInItemAsync(int assetId);
         bool PlaceHold(int assetId, int libraryCardId);
         Task MarkLostAsync(int assetId);

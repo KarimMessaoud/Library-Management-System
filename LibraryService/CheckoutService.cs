@@ -177,9 +177,9 @@ namespace LibraryService
                 "If you will not take the item up to this time you will not be able to borrow it."));
         }
 
-        public void CheckOutItem(int assetId, int libraryCardId)
+        public async Task CheckOutItemAsync(int assetId, int libraryCardId)
         {
-           if(IsCheckedOut(assetId))
+           if(await IsCheckedOutAsync(assetId))
             {
                 return;
             }
@@ -216,7 +216,7 @@ namespace LibraryService
                 Until = GetDefaultCheckoutTime(now)
             };
 
-            _context.Add(checkout);
+            await _context.AddAsync(checkout);
 
             var checkoutHistory = new CheckoutHistory()
             {
@@ -225,7 +225,7 @@ namespace LibraryService
                 CheckedOut = now
             };
 
-            _context.Add(checkoutHistory);
+            await _context.AddAsync(checkoutHistory);
 
             //Remove patron's hold on the item
             var hold = _context.Holds
@@ -238,7 +238,7 @@ namespace LibraryService
                 _context.Remove(hold);
             }
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         private DateTime GetDefaultCheckoutTime(DateTime now)
@@ -246,11 +246,11 @@ namespace LibraryService
             return now.AddDays(14);
         }
 
-        public bool IsCheckedOut(int assetId)
+        public async Task<bool> IsCheckedOutAsync(int assetId)
         {
-            return _context.Checkouts
+            return await _context.Checkouts
                 .Where(x => x.LibraryAsset.Id == assetId)
-                .Any();
+                .AnyAsync();
         }
 
         public bool PlaceHold(int id, int libraryCardId)
