@@ -19,8 +19,8 @@ namespace LibraryService
 
         public async Task AddAsync(LibraryBranch newBranch)
         {
-            await _context.AddAsync(newBranch);
-            _context.SaveChanges();
+            _context.Add(newBranch);
+            await _context.SaveChangesAsync();
         }
 
         public LibraryBranch GetBranchById(int branchId)
