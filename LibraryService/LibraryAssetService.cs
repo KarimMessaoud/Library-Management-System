@@ -18,7 +18,7 @@ namespace LibraryService
 
         public async Task AddAsync(LibraryAsset newAsset)
         {
-            await _context.LibraryAssets.AddAsync(newAsset);
+            _context.LibraryAssets.Add(newAsset);
             await _context.SaveChangesAsync();
         }
 
