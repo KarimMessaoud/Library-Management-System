@@ -130,7 +130,6 @@ namespace LibraryService
         public async Task CheckInItemAsync(int assetId)
         {
             var now = DateTime.Now;
-            var item = _context.LibraryAssets.FirstOrDefault(x => x.Id == assetId);
 
             // remove any existing checkouts on the item
             RemoveExistingCheckouts(assetId);
@@ -161,7 +160,7 @@ namespace LibraryService
             // otherwise, update the item status to available
                 UpdateAssetStatus(assetId, "Available");
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         private async Task SendEmailToEarliestHoldPatron(int assetId, IQueryable<Hold> currentHolds)
@@ -175,7 +174,7 @@ namespace LibraryService
             earliestHold.FirstHold = true;
             
             var cardId = earliestHold.LibraryCard.Id;
-            var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == cardId);
+            var patron = await _context.Users.FirstOrDefaultAsync(x => x.LibraryCard.Id == cardId);
             BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(patron.FirstName, patron.Email, "Library item is free to borrow",
                 $"The asset: '{asset.Title}' on which you have placed hold is now available. " +
                 "You have to come to us and take this item in 24 hours time. " +
