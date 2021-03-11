@@ -44,9 +44,9 @@ namespace LibraryService
             return _context.Checkouts;
         }
 
-        public Checkout GetById(int checkoutId)
+        public async Task<Checkout> GetByIdAsync(int checkoutId)
         {
-            return GetAll().FirstOrDefault(x => x.Id == checkoutId);
+            return await _context.Checkouts.FirstOrDefaultAsync(x => x.Id == checkoutId);
         }
 
         public IEnumerable<CheckoutHistory> GetCheckoutHistory(int id)
