@@ -144,7 +144,7 @@ namespace LibraryService
 
             if (await currentHolds.AnyAsync())
             {
-                SendEmailToEarliestHoldPatron(assetId, currentHolds);
+                await SendEmailToEarliestHoldPatron(assetId, currentHolds);
 
                 UpdateAssetStatus(assetId, "On Hold");
 
@@ -159,9 +159,9 @@ namespace LibraryService
             _context.SaveChanges();
         }
 
-        private void SendEmailToEarliestHoldPatron(int assetId, IQueryable<Hold> currentHolds)
+        private async Task SendEmailToEarliestHoldPatron(int assetId, IQueryable<Hold> currentHolds)
         {
-            var asset = _assetService.GetById(assetId);
+            var asset = await _assetService.GetByIdAsync(assetId);
             var earliestHold = currentHolds.OrderBy(x => x.HoldPlaced).FirstOrDefault();
 
             // Change FirstHold property in order for the patron who has placed hold

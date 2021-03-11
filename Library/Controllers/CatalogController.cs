@@ -218,7 +218,7 @@ namespace Library.Controllers
             }
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
-            var asset = _assetsService.GetById(decryptedId);
+            var asset = await _assetsService.GetByIdAsync(decryptedId);
 
             if (asset == null)
             {
@@ -264,7 +264,7 @@ namespace Library.Controllers
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
-            var asset = _assetsService.GetById(decryptedId);
+            var asset = await _assetsService.GetByIdAsync(decryptedId);
 
             if (asset == null)
             {
@@ -336,7 +336,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult EditVideo(string id)
+        public async Task<IActionResult> EditVideo(string id)
         {
             if (id == null)
             {
@@ -345,7 +345,7 @@ namespace Library.Controllers
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
-            var asset = _assetsService.GetById(decryptedId);
+            var asset = await _assetsService.GetByIdAsync(decryptedId);
 
             if (asset == null)
             {
@@ -427,7 +427,7 @@ namespace Library.Controllers
 
             ViewBag.DecryptedId = decryptedId;
 
-            var asset = _assetsService.GetById(decryptedId);
+            var asset = await _assetsService.GetByIdAsync(decryptedId);
 
             if (asset == null)
             {
@@ -455,7 +455,7 @@ namespace Library.Controllers
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
-            var book = _assetsService.GetById(decryptedId);
+            var book = await _assetsService.GetByIdAsync(decryptedId);
 
             if (book == null)
             {
@@ -486,7 +486,7 @@ namespace Library.Controllers
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
-            var asset = _assetsService.GetById(decryptedId);
+            var asset = await _assetsService.GetByIdAsync(decryptedId);
 
             if (asset == null)
             {
@@ -543,7 +543,7 @@ namespace Library.Controllers
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(id));
 
-            var asset = _assetsService.GetById(decryptedId);
+            var asset = await _assetsService.GetByIdAsync(decryptedId);
 
             if (asset == null)
             {

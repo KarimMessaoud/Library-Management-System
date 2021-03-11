@@ -7,7 +7,7 @@ namespace LibraryData
     public interface ILibraryAssetService
     {
         IEnumerable<LibraryAsset> GetAll();
-        LibraryAsset GetById(int id);
+        Task<LibraryAsset> GetByIdAsync(int id);
         Book GetBookById(int id);
         Video GetVideoById(int id);
 

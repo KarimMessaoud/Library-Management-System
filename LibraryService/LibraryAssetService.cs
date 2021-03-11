@@ -48,9 +48,13 @@ namespace LibraryService
             else return _context.Videos.FirstOrDefault(x => x.Id == id).Director;
         }
 
-        public LibraryAsset GetById(int id)
+        public async Task<LibraryAsset> GetByIdAsync(int id)
         {
-            return GetAll().FirstOrDefault(x => x.Id == id);
+            var assets = _context.LibraryAssets
+                    .Include(x => x.Status)
+                    .Include(x => x.Location);
+
+            return await assets.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Book GetBookById(int id)
