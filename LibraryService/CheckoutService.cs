@@ -66,13 +66,16 @@ namespace LibraryService
                 .Where(x => x.LibraryAsset.Id == id);
         }
 
-        public Checkout GetLatestCheckout(int assetId)
+        public async Task<Checkout> GetLatestCheckoutAsync(int assetId)
         {
-            return _context.Checkouts
+            var latestCheckout = await _context.Checkouts
                 .Where(x => x.LibraryAsset.Id == assetId)
                 .OrderByDescending(x => x.Since)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
+
+            return latestCheckout;
         }
+
         public async Task MarkFoundAsync(int assetId)
         {
             var now = DateTime.Now;

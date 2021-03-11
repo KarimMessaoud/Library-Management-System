@@ -244,7 +244,7 @@ namespace Library.Controllers
                 Cost = asset.Cost,
                 CurrentLocation = await _assetsService.GetCurrentLocationNameAsync(decryptedId),
                 ImageUrl = asset.ImageUrl,
-                LatestCheckout = _checkout.GetLatestCheckout(decryptedId),
+                LatestCheckout = await _checkout.GetLatestCheckoutAsync(decryptedId),
                 PatronName = _checkout.GetCurrentCheckoutPatron(decryptedId),
                 CheckoutHistory = await _checkout.GetCheckoutHistoryAsync(decryptedId),
                 CurrentHolds = currentHolds

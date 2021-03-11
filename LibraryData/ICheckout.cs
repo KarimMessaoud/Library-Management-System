@@ -13,7 +13,7 @@ namespace LibraryData
         IEnumerable<Hold> GetCurrentHolds(int id);
 
         Task<Checkout> GetByIdAsync(int checkoutId);
-        Checkout GetLatestCheckout(int assetId);
+        Task<Checkout> GetLatestCheckoutAsync(int assetId);
 
         string GetCurrentCheckoutPatron(int assetId);
         string GetCurrentHoldPatronName(int id);
