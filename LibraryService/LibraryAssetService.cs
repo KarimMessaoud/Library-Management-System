@@ -65,12 +65,12 @@ namespace LibraryService
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Video GetVideoById(int id)
+        public async Task<Video> GetVideoByIdAsync(int id)
         {
-            return _context.Videos
+            return await _context.Videos
                 .Include(x => x.Status)
                 .Include(x => x.Location)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public LibraryBranch GetCurrentLocation(int id)

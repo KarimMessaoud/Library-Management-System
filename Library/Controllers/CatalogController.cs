@@ -377,7 +377,7 @@ namespace Library.Controllers
             {
                 int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
 
-                var video = _assetsService.GetVideoById(decryptedId);
+                var video = await _assetsService.GetVideoByIdAsync(decryptedId);
 
                 if (video == null)
                 {
