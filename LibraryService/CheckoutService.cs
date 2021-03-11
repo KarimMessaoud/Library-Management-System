@@ -49,12 +49,14 @@ namespace LibraryService
             return await _context.Checkouts.FirstOrDefaultAsync(x => x.Id == checkoutId);
         }
 
-        public IEnumerable<CheckoutHistory> GetCheckoutHistory(int id)
+        public async Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(int id)
         {
-            return _context.CheckoutHistories
+            var checkoutHistory = await _context.CheckoutHistories
                 .Include(x => x.LibraryAsset)
                 .Include(x => x.LibraryCard)
-                .Where(x => x.LibraryAsset.Id == id);
+                .Where(x => x.LibraryAsset.Id == id).ToListAsync();
+
+            return checkoutHistory;
         }
 
         public IEnumerable<Hold> GetCurrentHolds(int id)

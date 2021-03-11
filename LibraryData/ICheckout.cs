@@ -9,7 +9,7 @@ namespace LibraryData
     {
         Task AddAsync(Checkout newCheckout);
         IEnumerable<Checkout> GetAll();
-        IEnumerable<CheckoutHistory> GetCheckoutHistory(int id);
+        Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(int id);
         IEnumerable<Hold> GetCurrentHolds(int id);
 
         Task<Checkout> GetByIdAsync(int checkoutId);
