@@ -8,7 +8,7 @@ namespace LibraryData
     {
         IEnumerable<LibraryAsset> GetAll();
         Task<LibraryAsset> GetByIdAsync(int id);
-        Book GetBookById(int id);
+        Task<Book> GetBookByIdAsync(int id);
         Video GetVideoById(int id);
 
         Task AddAsync(LibraryAsset newAsset);

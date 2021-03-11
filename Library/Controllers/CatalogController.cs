@@ -296,7 +296,7 @@ namespace Library.Controllers
             if (ModelState.IsValid)
             {
                 int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
-                var book = _assetsService.GetBookById(decryptedId);
+                var book = await _assetsService.GetBookByIdAsync(decryptedId);
 
                 if (book == null)
                 {

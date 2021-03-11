@@ -57,12 +57,12 @@ namespace LibraryService
             return await assets.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Book GetBookById(int id)
+        public async Task<Book> GetBookByIdAsync(int id)
         {
-            return _context.Books
+            return await _context.Books
                 .Include(x => x.Status)
                 .Include(x => x.Location)
-                .FirstOrDefault(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Video GetVideoById(int id)
