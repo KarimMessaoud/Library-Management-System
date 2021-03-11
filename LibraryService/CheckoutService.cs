@@ -35,7 +35,7 @@ namespace LibraryService
 
         public async Task AddAsync(Checkout newCheckout)
         {
-            await _context.AddAsync(newCheckout);
+            _context.Add(newCheckout);
             await _context.SaveChangesAsync();
         }
 
