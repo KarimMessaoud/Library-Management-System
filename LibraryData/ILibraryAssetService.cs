@@ -19,7 +19,7 @@ namespace LibraryData
         string GetTitle(int id);
         Task<string> GetIsbnAsync(int id);
 
-        LibraryBranch GetCurrentLocation(int id);
+        Task<string> GetCurrentLocationNameAsync(int id);
 
     }
 }

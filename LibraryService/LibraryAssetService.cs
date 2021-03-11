@@ -73,10 +73,12 @@ namespace LibraryService
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public LibraryBranch GetCurrentLocation(int id)
+        public async Task<string> GetCurrentLocationNameAsync(int id)
         {
-            return _context.LibraryAssets
-                .FirstOrDefault(x => x.Id == id).Location;
+            var asset = await _context.LibraryAssets
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return asset.Location.Name;
         }
 
 

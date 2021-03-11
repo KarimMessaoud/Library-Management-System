@@ -242,7 +242,7 @@ namespace Library.Controllers
                 ISBN = await _assetsService.GetIsbnAsync(decryptedId),
                 Status = asset.Status.Name,
                 Cost = asset.Cost,
-                CurrentLocation = _assetsService.GetCurrentLocation(decryptedId).Name,
+                CurrentLocation = await _assetsService.GetCurrentLocationNameAsync(decryptedId),
                 ImageUrl = asset.ImageUrl,
                 LatestCheckout = _checkout.GetLatestCheckout(decryptedId),
                 PatronName = _checkout.GetCurrentCheckoutPatron(decryptedId),
