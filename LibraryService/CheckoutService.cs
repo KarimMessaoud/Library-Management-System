@@ -257,16 +257,12 @@ namespace LibraryService
                 .AnyAsync();
         }
 
-        public bool PlaceHold(int id, int libraryCardId)
+        public async Task<bool> PlaceHoldAsync(int id, int libraryCardId)
         {
             var now = DateTime.Now;
 
-            var asset = _context.LibraryAssets
-                .Include(x => x.Status)
-                .First(x => x.Id == id);
-
-            var card = _context.LibraryCards
-                .FirstOrDefault(x => x.Id == libraryCardId);
+            var card = await _context.LibraryCards
+                .FirstOrDefaultAsync(x => x.Id == libraryCardId);
 
             //Do not allow user enter libraryCardId that does not exist
             if(card == null)
@@ -276,7 +272,7 @@ namespace LibraryService
 
             //In case of libraryCard exists but patron has been deleted,
             //do not allow to place hold on the item
-            var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+            var patron = await _context.Users.FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
             if (patron == null)
             {
@@ -290,9 +286,11 @@ namespace LibraryService
             {
                 var userId = signedInUser.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                var userLibraryCardId = _context.Users
+                var user = await _context.Users
                     .Include(x => x.LibraryCard)
-                    .FirstOrDefault(x => x.Id == userId).LibraryCard?.Id;
+                    .FirstOrDefaultAsync(x => x.Id == userId);
+
+                var userLibraryCardId = user.LibraryCard?.Id;
 
                 if (userLibraryCardId != libraryCardId)
                 {
@@ -307,7 +305,7 @@ namespace LibraryService
                 .Include(x => x.LibraryCard)
                 .Where(x => x.Until >= now);
 
-            var isCheckoutByUser = currentCheckouts.FirstOrDefault(x => x.LibraryAsset.Id == id && x.LibraryCard.Id == libraryCardId && x.Until >= now);
+            var isCheckoutByUser = await currentCheckouts.FirstOrDefaultAsync(x => x.LibraryAsset.Id == id && x.LibraryCard.Id == libraryCardId && x.Until >= now);
            
             if (isCheckoutByUser != null)
             {
@@ -320,10 +318,14 @@ namespace LibraryService
                 .Include(x => x.LibraryCard)
                 .Where(x => x.LibraryAsset.Id == id);
 
-            var currentUserHolds = currentHolds
-                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+            var currentUserHolds = await currentHolds
+                .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
             if (currentUserHolds != null) return false;
+
+            var asset = await _context.LibraryAssets
+                .Include(x => x.Status)
+                .FirstAsync(x => x.Id == id);
 
             var hold = new Hold()
             {
@@ -342,7 +344,7 @@ namespace LibraryService
             }
 
             _context.Add(hold);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }

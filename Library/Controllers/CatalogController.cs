@@ -567,22 +567,22 @@ namespace Library.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Patron, Employee, Admin")]
-        public IActionResult PlaceHold(string assetId, int libraryCardId)
+        public async Task<IActionResult> PlaceHoldAsync(string assetId, int libraryCardId)
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
 
-            if (!_checkout.PlaceHold(decryptedId, libraryCardId))
+            if (!await _checkout.PlaceHoldAsync(decryptedId, libraryCardId))
             {
                 return RedirectToAction("Hold", new { id = assetId });
             }
 
-            var patron = _context.Users
-                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+            var patron = await _context.Users
+                .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
-            var hold = _context.Holds
+            var hold = await _context.Holds
                 .Include(x => x.LibraryCard)
                 .Include(x => x.LibraryAsset)
-                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == decryptedId);
+                .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == decryptedId);
 
 
             if (hold.FirstHold == true)
