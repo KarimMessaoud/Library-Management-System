@@ -85,7 +85,11 @@ namespace LibraryService
         public async Task<string> GetIsbnAsync(int id)
         {
             if (await _context.Books.AnyAsync(x => x.Id == id))
-                return _context.Books.FirstOrDefault(x => x.Id == id).ISBN;
+            {
+                var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == id);
+                return book.ISBN;
+            }
+                 
             else return "";
         }
 
