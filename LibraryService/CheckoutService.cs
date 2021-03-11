@@ -188,13 +188,11 @@ namespace LibraryService
                 return;
             }
 
-            var item = _context.LibraryAssets.FirstOrDefault(x => x.Id == assetId);
-
             UpdateAssetStatus(assetId, "Checked Out");
 
-            var libraryCard = _context.LibraryCards
+            var libraryCard = await _context.LibraryCards
                 .Include(x => x.Checkouts)
-                .FirstOrDefault(x => x.Id == libraryCardId);
+                .FirstOrDefaultAsync(x => x.Id == libraryCardId);
 
             if (libraryCard == null)
             {
@@ -203,7 +201,7 @@ namespace LibraryService
 
             //In case of libraryCard exists but patron has been deleted,
             //do not allow to checkout the item
-            var patron = _context.Users.FirstOrDefault(x => x.LibraryCard.Id == libraryCardId);
+            var patron = await _context.Users.FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
             if(patron == null)
             {
@@ -211,6 +209,8 @@ namespace LibraryService
             }
 
             var now = DateTime.Now;
+
+            var item = await _context.LibraryAssets.FirstOrDefaultAsync(x => x.Id == assetId);
 
             var checkout = new Checkout()
             {
@@ -220,7 +220,7 @@ namespace LibraryService
                 Until = GetDefaultCheckoutTime(now)
             };
 
-            await _context.AddAsync(checkout);
+            _context.Add(checkout);
 
             var checkoutHistory = new CheckoutHistory()
             {
@@ -229,13 +229,13 @@ namespace LibraryService
                 CheckedOut = now
             };
 
-            await _context.AddAsync(checkoutHistory);
+            _context.Add(checkoutHistory);
 
             //Remove patron's hold on the item
-            var hold = _context.Holds
+            var hold = await _context.Holds
                 .Include(x => x.LibraryAsset)
                 .Include(x => x.LibraryCard)
-                .FirstOrDefault(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == assetId);
+                .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == assetId);
 
             if(hold != null)
             {
