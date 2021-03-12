@@ -375,7 +375,7 @@ namespace LibraryService
                 .HoldPlaced;
         }
 
-        public string GetCurrentCheckoutPatron(int assetId)
+        public async Task<string> GetCurrentCheckoutPatronAsync(int assetId)
         {
             var checkout = GetCheckoutByAssetId(assetId);
 
@@ -386,8 +386,8 @@ namespace LibraryService
             
             var cardId = checkout.LibraryCard.Id;
 
-            var patron = _context.Users
-                .FirstOrDefault(x => x.LibraryCard.Id == cardId);
+            var patron = await _context.Users
+                .FirstOrDefaultAsync(x => x.LibraryCard.Id == cardId);
 
             return patron.FirstName + " " + patron.LastName;
         }
@@ -397,7 +397,7 @@ namespace LibraryService
             return _context.Checkouts
                 .Include(x => x.LibraryAsset)
                 .Include(x => x.LibraryCard)
-                 .FirstOrDefault(x => x.LibraryAsset.Id == assetId);
+                .FirstOrDefault(x => x.LibraryAsset.Id == assetId);
         }
 
         public void ChargeOverdueFees(string patronId)

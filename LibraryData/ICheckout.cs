@@ -15,7 +15,7 @@ namespace LibraryData
         Task<Checkout> GetByIdAsync(int checkoutId);
         Task<Checkout> GetLatestCheckoutAsync(int assetId);
 
-        string GetCurrentCheckoutPatron(int assetId);
+        Task<string> GetCurrentCheckoutPatronAsync(int assetId);
         string GetCurrentHoldPatronName(int id);
         DateTime GetCurrentHoldPlaced(int id);
         Task<bool> IsCheckedOutAsync(int assetId);
