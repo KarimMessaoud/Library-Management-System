@@ -400,7 +400,7 @@ namespace LibraryService
                 .FirstOrDefault(x => x.LibraryAsset.Id == assetId);
         }
 
-        public void ChargeOverdueFees(string patronId)
+        public async Task ChargeOverdueFeesAsync(string patronId)
         {
             //User who is only a patron cannot charge fees in somebody's behalf
             var signedInUser = _httpContextAccessor.HttpContext.User;
@@ -414,17 +414,17 @@ namespace LibraryService
                 return;
             }
 
-            var patron = _context.Users
+            var patron = await _context.Users
                 .Include(x => x.LibraryCard)
-                .FirstOrDefault(x => x.Id == patronId);
+                .FirstOrDefaultAsync(x => x.Id == patronId);
 
             if(patron == null)
             {
                 return;
             }
 
-            var libraryCard = _context.LibraryCards
-                .FirstOrDefault(x => x.Id == patron.LibraryCard.Id);
+            var libraryCard = await _context.LibraryCards
+                .FirstOrDefaultAsync(x => x.Id == patron.LibraryCard.Id);
 
             var checkouts = _context.Checkouts
                 .Where(x => x.LibraryCard.Id == libraryCard.Id);
@@ -442,7 +442,7 @@ namespace LibraryService
                     libraryCard.Fees += redundantDays * 2;
                 }
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void ResetOverdueFees(string patronId)

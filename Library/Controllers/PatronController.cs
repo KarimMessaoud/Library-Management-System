@@ -150,9 +150,9 @@ namespace Library.Controllers
             return View(model);
         }
 
-        public IActionResult ChargeFees(string patronId)
+        public async Task<IActionResult> ChargeFeesAsync(string patronId)
         {
-            _checkout.ChargeOverdueFees(patronId);
+            await _checkout.ChargeOverdueFeesAsync(patronId);
             return RedirectToAction("Detail", new { id = patronId });
         }
 

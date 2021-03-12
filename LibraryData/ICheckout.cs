@@ -25,7 +25,7 @@ namespace LibraryData
         Task<bool> PlaceHoldAsync(int assetId, int libraryCardId);
         Task MarkLostAsync(int assetId);
         Task MarkFoundAsync(int assetId);
-        void ChargeOverdueFees(string patronId);
+        Task ChargeOverdueFeesAsync(string patronId);
         void ResetOverdueFees(string patronId);
     }
 }
