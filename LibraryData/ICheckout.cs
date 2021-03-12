@@ -7,25 +7,28 @@ namespace LibraryData
 {
     public interface ICheckout
     {
-        Task AddAsync(Checkout newCheckout);
-        IEnumerable<Checkout> GetAll();
-        Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(int id);
-        IEnumerable<Hold> GetCurrentHolds(int id);
-
         Task<Checkout> GetByIdAsync(int checkoutId);
         Task<Checkout> GetLatestCheckoutAsync(int assetId);
 
         Task<string> GetCurrentCheckoutPatronAsync(int assetId);
-        string GetCurrentHoldPatronName(int id);
-        DateTime GetCurrentHoldPlaced(int id);
+
+        Task<bool> PlaceHoldAsync(int assetId, int libraryCardId);
         Task<bool> IsCheckedOutAsync(int assetId);
 
+        Task AddAsync(Checkout newCheckout);
         Task CheckOutItemAsync(int assetId, int libraryCardId);
         Task CheckInItemAsync(int assetId);
-        Task<bool> PlaceHoldAsync(int assetId, int libraryCardId);
         Task MarkLostAsync(int assetId);
         Task MarkFoundAsync(int assetId);
         Task ChargeOverdueFeesAsync(string patronId);
         Task ResetOverdueFeesAsync(string patronId);
+
+        Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(int id);
+
+        IEnumerable<Hold> GetCurrentHolds(int id);
+        IEnumerable<Checkout> GetAll();
+
+        string GetCurrentHoldPatronName(int id);
+        DateTime GetCurrentHoldPlaced(int id);
     }
 }
