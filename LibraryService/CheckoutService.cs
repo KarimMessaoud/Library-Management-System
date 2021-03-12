@@ -445,25 +445,25 @@ namespace LibraryService
             await _context.SaveChangesAsync();
         }
 
-        public void ResetOverdueFees(string patronId)
+        public async Task ResetOverdueFeesAsync(string patronId)
         {
-            var patron = _context.Users
+            var patron = await _context.Users
                 .Include(x => x.LibraryCard)
-                .FirstOrDefault(x => x.Id == patronId);
+                .FirstOrDefaultAsync(x => x.Id == patronId);
 
             if (patron == null)
             {
                 return;
             }
 
-            var libraryCard = _context.LibraryCards
-                .FirstOrDefault(x => x.Id == patron.LibraryCard.Id);
+            var libraryCard = await _context.LibraryCards
+                .FirstOrDefaultAsync(x => x.Id == patron.LibraryCard.Id);
 
             if (libraryCard.Fees > 0)
             {
                 _context.Update(libraryCard);
                 libraryCard.Fees = 0;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             else return;
         }

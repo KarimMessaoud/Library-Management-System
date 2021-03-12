@@ -26,6 +26,6 @@ namespace LibraryData
         Task MarkLostAsync(int assetId);
         Task MarkFoundAsync(int assetId);
         Task ChargeOverdueFeesAsync(string patronId);
-        void ResetOverdueFees(string patronId);
+        Task ResetOverdueFeesAsync(string patronId);
     }
 }

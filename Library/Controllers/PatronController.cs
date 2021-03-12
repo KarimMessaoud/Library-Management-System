@@ -157,9 +157,9 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult ResetFees(string patronId)
+        public async Task<IActionResult> ResetFeesAsync(string patronId)
         {
-            _checkout.ResetOverdueFees(patronId);
+            await _checkout.ResetOverdueFeesAsync(patronId);
             return RedirectToAction("Detail", new { id = patronId });
         }
 
