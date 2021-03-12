@@ -172,7 +172,7 @@ namespace Library.Controllers
                 return View("NoIdFound");
             }
 
-            var patron = _patron.Get(id);
+            var patron = await _patron.GetAsync(id);
 
             if (patron == null)
             {
@@ -217,14 +217,14 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee, Patron")]
-        public IActionResult Edit(string id)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
             {
                 return View("NoIdFound");
             }
 
-            var patron = _patron.Get(id);
+            var patron = await _patron.GetAsync(id);
 
             if (patron == null)
             {
@@ -262,7 +262,7 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                var patron = _patron.Get(model.Id);
+                var patron = await _patron.GetAsync(model.Id);
 
                 if (patron == null)
                 {
@@ -287,14 +287,14 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
                 return View("NoIdFound");
             }
 
-            var patron = _patron.Get(id);
+            var patron = await _patron.GetAsync(id);
 
             if (patron == null)
             {
@@ -337,7 +337,7 @@ namespace Library.Controllers
                 return View("NoIdFound");
             }
 
-            var patron = _patron.Get(id);
+            var patron = await _patron.GetAsync(id);
 
             if (patron == null)
             {

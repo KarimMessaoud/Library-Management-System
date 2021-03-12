@@ -20,10 +20,13 @@ namespace LibraryService
             _userManager = userManager;
         }
 
-        public User Get(string id)
+        public async Task<User> GetAsync(string id)
         {
-            return GetAll()
-                .FirstOrDefault(x => x.Id == id);
+            var allPatrons = GetAll();
+
+            var patron = await allPatrons.FirstOrDefaultAsync(x => x.Id == id);
+
+            return patron;
         }
 
         public IQueryable<User> GetAll()
