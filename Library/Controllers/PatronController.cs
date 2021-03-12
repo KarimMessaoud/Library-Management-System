@@ -44,9 +44,9 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public IActionResult Index(string searchString)
+        public async Task<IActionResult> Index(string searchString)
         {
-            var allPatrons = _patron.GetAll();
+            var allPatrons = await _patron.GetAllAsync();
 
             if (!String.IsNullOrEmpty(searchString))
             {

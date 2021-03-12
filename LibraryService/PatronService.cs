@@ -22,21 +22,21 @@ namespace LibraryService
 
         public async Task<User> GetAsync(string id)
         {
-            var allPatrons = GetAll();
+            var allPatrons = await GetAllAsync();
 
             var patron = await allPatrons.FirstOrDefaultAsync(x => x.Id == id);
 
             return patron;
         }
 
-        public IQueryable<User> GetAll()
+        public async Task<IQueryable<User>> GetAllAsync()
         {
             var patronRoleId = _context.Roles
                 .FirstOrDefault(x => x.Name == "Patron").Id;
 
-            var allPatronsIds = _context.UserRoles
+            var allPatronsIds = await _context.UserRoles
                 .Where(x => x.RoleId == patronRoleId)
-                .Select(x => x.UserId);
+                .Select(x => x.UserId).ToListAsync();
 
             return _context.Users
                 .Include(x => x.LibraryCard)

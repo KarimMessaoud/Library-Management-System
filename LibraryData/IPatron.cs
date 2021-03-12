@@ -9,7 +9,7 @@ namespace LibraryData
     public interface IPatron
     {
         Task<User> GetAsync(string id);
-        IQueryable<User> GetAll();
+        Task<IQueryable<User>> GetAllAsync();
         Task<IEnumerable<CheckoutHistory>> GetCheckoutHistory(string patronId);
         Task<IEnumerable<Hold>> GetHolds(string patronId);
         Task<IEnumerable<Checkout>> GetCheckouts(string patronId);
