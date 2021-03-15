@@ -200,9 +200,9 @@ namespace Library.Controllers
                 OverdueFees = patron.LibraryCard.Fees,
                 LibraryCardId = patron.LibraryCard.Id,
                 Telephone = patron.PhoneNumber,
-                AssetsCheckedOut = await _patron.GetCheckouts(id) ?? new List<Checkout>(),
-                CheckoutHistory = await _patron.GetCheckoutHistory(id),
-                Holds = await _patron.GetHolds(id)
+                AssetsCheckedOut = await _patron.GetCheckoutsAsync(id) ?? new List<Checkout>(),
+                CheckoutHistory = await _patron.GetCheckoutHistoryAsync(id),
+                Holds = await _patron.GetHoldsAsync(id)
             };
 
             //Encrypt Library Assets' Ids in order to be able to get to details of the checkout items
@@ -302,13 +302,14 @@ namespace Library.Controllers
                 return View("PatronNotFound", id);
             }
 
-            //Check if there are any items that were checked out by the patron and not turned back. 
+            //Check if there are any items that were checked out by the patron and not turned back 
+            //or if the patron has placed hold on them. 
             // If so do not allow to delete this patron.
-            var checkouts = _patron.GetCheckouts(id);
+            var checkouts = await _patron.GetCheckoutsAsync(id);
 
-            var holds = _patron.GetHolds(id);
+            var holds = await _patron.GetHoldsAsync(id);
 
-            if (checkouts.Result.Any() || holds.Result.Any())
+            if (checkouts.Any() || holds.Any())
             {
                 return View("DeletingForbidden", id);
             }

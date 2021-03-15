@@ -44,7 +44,7 @@ namespace LibraryService
                 .Where(x => allPatronsIds.Any(y => y == x.Id));
         }
 
-        public async Task<IEnumerable<CheckoutHistory>> GetCheckoutHistory(string patronId)
+        public async Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(string patronId)
         {
             var patron = await _userManager.FindByIdAsync(patronId);
             var cardId = patron.LibraryCard.Id;
@@ -56,7 +56,7 @@ namespace LibraryService
                 .OrderByDescending(x => x.CheckedOut);
         }
 
-        public async Task<IEnumerable<Checkout>> GetCheckouts(string patronId)
+        public async Task<IEnumerable<Checkout>> GetCheckoutsAsync(string patronId)
         {
             var patron = await _userManager.FindByIdAsync(patronId);
             var cardId = patron.LibraryCard.Id;
@@ -67,7 +67,7 @@ namespace LibraryService
                 .Where(x => x.LibraryCard.Id == cardId);
         }
 
-        public async Task<IEnumerable<Hold>> GetHolds(string patronId)
+        public async Task<IEnumerable<Hold>> GetHoldsAsync(string patronId)
         {
             var patron = await _userManager.FindByIdAsync(patronId);
             var cardId = patron.LibraryCard.Id;
