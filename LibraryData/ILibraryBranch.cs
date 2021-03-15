@@ -11,9 +11,12 @@ namespace LibraryData
         IEnumerable<User> GetPatrons(int branchId);
         IEnumerable<LibraryAsset> GetAssets(int branchId);
         IEnumerable<string> GetBranchHours(int branchId);
+
         LibraryBranch GetBranchById(int branchId);
         LibraryBranch GetBranchByName(string branchName);
+
         Task AddAsync(LibraryBranch newBranch);
+
         bool IsBranchOpen(int branchId);
     }
 }
