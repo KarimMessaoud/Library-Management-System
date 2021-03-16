@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Library.Models.Branch;
 using LibraryData;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +23,8 @@ namespace Library.Controllers
                 Id = x.Id,
                 Name = x.Name,
                 IsOpen = _branch.IsBranchOpen(x.Id),
-                NumberOfAssets = _branch.GetAssets(x.Id).Count(),
+                //Asynchronous operations used in a blocking manner below
+                NumberOfAssets = _branch.GetAssetsAsync(x.Id).Result.Count(),
                 NumberOfPatrons = _branch.GetPatrons(x.Id).Count()
             });
 
@@ -34,7 +36,7 @@ namespace Library.Controllers
             return View(model);
         }
 
-        public IActionResult Detail(int? id)
+        public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
             {
@@ -57,12 +59,14 @@ namespace Library.Controllers
                 Telephone = branch.Telephone,
                 Description = branch.Description,
                 OpenDate = branch.OpenDate.ToString("yyyy-MM-dd"),
-                NumberOfAssets = _branch.GetAssets((int)id).Count(),
                 NumberOfPatrons = _branch.GetPatrons((int)id).Count(),
-                TotalAssetValue = _branch.GetAssets((int)id).Sum(x => x.Cost),
+                //TotalAssetValue = _branch.GetAssets((int)id).Sum(x => x.Cost),
                 ImageUrl = branch.ImageUrl,
                 HoursOpen = _branch.GetBranchHours((int)id)
             };
+
+            var branchAssets = await _branch.GetAssetsAsync((int)id);
+            model.NumberOfAssets = branchAssets.Count();
 
             return View(model);
         }

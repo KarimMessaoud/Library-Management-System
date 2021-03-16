@@ -9,7 +9,7 @@ namespace LibraryData
     {
         IEnumerable<LibraryBranch> GetAll();
         IEnumerable<User> GetPatrons(int branchId);
-        IEnumerable<LibraryAsset> GetAssets(int branchId);
+        Task<IEnumerable<LibraryAsset>> GetAssetsAsync(int branchId);
         IEnumerable<string> GetBranchHours(int branchId);
 
         LibraryBranch GetBranchById(int branchId);

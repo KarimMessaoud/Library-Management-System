@@ -42,12 +42,15 @@ namespace LibraryService
                 .Include(x => x.LibraryAssets);
         }
 
-        public IEnumerable<LibraryAsset> GetAssets(int branchId)
+        public async Task<IEnumerable<LibraryAsset>> GetAssetsAsync(int branchId)
         {
-            return _context.LibraryBranches
+            var branch = await _context.LibraryBranches
                 .Include(x => x.LibraryAssets)
-                .FirstOrDefault(x => x.Id == branchId)
-                .LibraryAssets;
+                .FirstOrDefaultAsync(x => x.Id == branchId);
+
+            var branchAssets = branch.LibraryAssets;
+
+            return branchAssets;
         }
 
         public IEnumerable<string> GetBranchHours(int branchId)
