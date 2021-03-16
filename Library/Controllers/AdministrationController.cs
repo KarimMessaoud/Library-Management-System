@@ -45,9 +45,9 @@ namespace Library.Controllers
         }
 
         [HttpGet]
-        public IActionResult UsersList()
+        public async Task<IActionResult> UsersList()
         {
-            var users = _userManager.Users;
+            var users = await _userManager.Users.ToListAsync();
 
             return View(users);
         }
