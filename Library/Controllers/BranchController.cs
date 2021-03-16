@@ -60,13 +60,13 @@ namespace Library.Controllers
                 Description = branch.Description,
                 OpenDate = branch.OpenDate.ToString("yyyy-MM-dd"),
                 NumberOfPatrons = _branch.GetPatrons((int)id).Count(),
-                //TotalAssetValue = _branch.GetAssets((int)id).Sum(x => x.Cost),
                 ImageUrl = branch.ImageUrl,
                 HoursOpen = _branch.GetBranchHours((int)id)
             };
 
             var branchAssets = await _branch.GetAssetsAsync((int)id);
             model.NumberOfAssets = branchAssets.Count();
+            model.TotalAssetValue = branchAssets.Sum(x => x.Cost);
 
             return View(model);
         }
