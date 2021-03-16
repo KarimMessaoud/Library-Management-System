@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using LibraryData;
 using Hangfire;
 using LibraryData.Models;
-using System.Linq;
 
 namespace Library.Controllers
 {
