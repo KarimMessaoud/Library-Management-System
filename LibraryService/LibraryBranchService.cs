@@ -61,12 +61,15 @@ namespace LibraryService
             return DataHelpers.HumanizeBizHours(hours);
         }
 
-        public IEnumerable<User> GetPatrons(int branchId)
+        public async Task<IEnumerable<User>> GetPatronsAsync(int branchId)
         {
-            return _context.LibraryBranches
+            var branch = await _context.LibraryBranches
                 .Include(x => x.Patrons)
-                .FirstOrDefault(x => x.Id == branchId)
-                .Patrons;
+                .FirstOrDefaultAsync(x => x.Id == branchId);
+
+            var branchPatrons = branch.Patrons;
+
+            return branchPatrons;
         }
 
         public bool IsBranchOpen(int branchId)

@@ -25,7 +25,7 @@ namespace Library.Controllers
                 IsOpen = _branch.IsBranchOpen(x.Id),
                 //Asynchronous operations used in a blocking manner below
                 NumberOfAssets = _branch.GetAssetsAsync(x.Id).Result.Count(),
-                NumberOfPatrons = _branch.GetPatrons(x.Id).Count()
+                NumberOfPatrons = _branch.GetPatronsAsync(x.Id).Result.Count()
             });
 
             var model = new BranchIndexViewModel()
@@ -59,14 +59,16 @@ namespace Library.Controllers
                 Telephone = branch.Telephone,
                 Description = branch.Description,
                 OpenDate = branch.OpenDate.ToString("yyyy-MM-dd"),
-                NumberOfPatrons = _branch.GetPatrons((int)id).Count(),
                 ImageUrl = branch.ImageUrl,
                 HoursOpen = _branch.GetBranchHours((int)id)
             };
 
             var branchAssets = await _branch.GetAssetsAsync((int)id);
+            var branchPatrons = await _branch.GetPatronsAsync((int)id);
+
             model.NumberOfAssets = branchAssets.Count();
             model.TotalAssetValue = branchAssets.Sum(x => x.Cost);
+            model.NumberOfPatrons = branchPatrons.Count();
 
             return View(model);
         }
