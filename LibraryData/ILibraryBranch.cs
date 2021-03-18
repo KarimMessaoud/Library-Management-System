@@ -8,14 +8,14 @@ namespace LibraryData
     public interface ILibraryBranch
     {
         IEnumerable<LibraryBranch> GetAll();
+        IEnumerable<string> GetBranchHours(int branchId);
+
         Task<IEnumerable<User>> GetPatronsAsync(int branchId);
         Task<IEnumerable<LibraryAsset>> GetAssetsAsync(int branchId);
-        IEnumerable<string> GetBranchHours(int branchId);
+        Task AddAsync(LibraryBranch newBranch);
 
         LibraryBranch GetBranchById(int branchId);
         LibraryBranch GetBranchByName(string branchName);
-
-        Task AddAsync(LibraryBranch newBranch);
 
         bool IsBranchOpen(int branchId);
     }
