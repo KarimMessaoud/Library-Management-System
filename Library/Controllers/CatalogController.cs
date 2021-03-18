@@ -47,10 +47,11 @@ namespace Library.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index(string searchString)
+        public async Task<IActionResult> Index(string searchString)
         {
-            var assetModels = _assetsService.GetAll()
-                .Select(x => 
+            var assets = await _assetsService.GetAllAsync();
+
+            var encryptedIdAssets = assets.Select(x => 
                 {
                     x.EncryptedId = protector.Protect(x.Id.ToString());
                     return x;
@@ -58,7 +59,7 @@ namespace Library.Controllers
                 .OrderBy(x => x.Title);
 
 
-            var listingResult = assetModels
+            var listingResult = encryptedIdAssets
                 .Select(a => new AssetIndexListingViewModel
                 {
                     Id = a.EncryptedId,

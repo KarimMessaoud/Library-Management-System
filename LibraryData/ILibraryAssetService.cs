@@ -6,7 +6,7 @@ namespace LibraryData
 {
     public interface ILibraryAssetService
     {
-        IEnumerable<LibraryAsset> GetAll();
+        Task<IEnumerable<LibraryAsset>> GetAllAsync();
 
         Task<LibraryAsset> GetByIdAsync(int id);
         Task<Book> GetBookByIdAsync(int id);

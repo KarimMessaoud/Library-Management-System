@@ -34,11 +34,11 @@ namespace LibraryService
             await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<LibraryAsset> GetAll()
+        public async Task<IEnumerable<LibraryAsset>> GetAllAsync()
         {
-            return _context.LibraryAssets
+            return await _context.LibraryAssets
                 .Include(x => x.Status)
-                .Include(x => x.Location);
+                .Include(x => x.Location).ToListAsync();
         }
 
         public string GetAuthorOrDirector(int id)
