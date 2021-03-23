@@ -18,6 +18,7 @@ namespace LibraryData
 
         Task<string> GetIsbnAsync(int id);
         Task<string> GetCurrentLocationNameAsync(int id);
+        Task<string> GetAuthorOrDirectorAsync(int id);
 
         string GetAuthorOrDirector(int id);
         string GetType(int id);

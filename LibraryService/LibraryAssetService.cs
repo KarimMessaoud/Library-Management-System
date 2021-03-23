@@ -44,8 +44,30 @@ namespace LibraryService
         public string GetAuthorOrDirector(int id)
         {
             var isBook = _context.Books.Any(x => x.Id == id);
-            if (isBook) return _context.Books.FirstOrDefault(x => x.Id == id).Author;
-            else return _context.Videos.FirstOrDefault(x => x.Id == id).Director;
+
+            if (isBook)
+                return _context.Books.FirstOrDefault(x => x.Id == id).Author;
+            else
+                return _context.Videos.FirstOrDefault(x => x.Id == id).Director;
+        }
+
+        public async Task<string> GetAuthorOrDirectorAsync(int id)
+        {
+            var isBook = await _context.Books.AnyAsync(x => x.Id == id);
+
+            if (isBook)
+            {
+                var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == id);
+
+                return book.Author;
+            }
+
+            else
+            {
+                var video = await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
+
+                return video.Director;
+            }
         }
 
         public async Task<LibraryAsset> GetByIdAsync(int id)

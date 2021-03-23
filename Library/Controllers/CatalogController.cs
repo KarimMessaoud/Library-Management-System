@@ -60,19 +60,19 @@ namespace Library.Controllers
 
 
             var listingResult = encryptedIdAssets
-                .Select(a => new AssetIndexListingViewModel
+                .Select(x => new AssetIndexListingViewModel
                 {
-                    Id = a.EncryptedId,
-                    ImageUrl = a.ImageUrl,
-                    AuthorOrDirector = _assetsService.GetAuthorOrDirector(a.Id),
-                    Title = _assetsService.GetTitle(a.Id),
-                    Type = _assetsService.GetType(a.Id)
+                    Id = x.EncryptedId,
+                    ImageUrl = x.ImageUrl,
+                    AuthorOrDirector = _assetsService.GetAuthorOrDirector(x.Id),
+                    Title = _assetsService.GetTitle(x.Id),
+                    Type = _assetsService.GetType(x.Id)
                 }).ToList();
+
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                listingResult = listingResult
-                    .Where(x => x.Title.ToUpper().Contains(searchString.ToUpper()) || x.AuthorOrDirector.ToUpper().Contains(searchString.ToUpper()))
+                listingResult = listingResult.Where(x => x.Title.ToUpper().Contains(searchString.ToUpper()) || x.AuthorOrDirector.ToUpper().Contains(searchString.ToUpper()))
                     .ToList();
             }
 
@@ -237,7 +237,7 @@ namespace Library.Controllers
             {
                 AssetId = id,
                 Title = asset.Title,
-                AuthorOrDirector = _assetsService.GetAuthorOrDirector(decryptedId),
+                AuthorOrDirector = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
                 Type = _assetsService.GetType(decryptedId),
                 Year = asset.Year,
                 ISBN = await _assetsService.GetIsbnAsync(decryptedId),
@@ -277,7 +277,7 @@ namespace Library.Controllers
             {
                 Id = id,
                 Title = asset.Title,
-                Author = _assetsService.GetAuthorOrDirector(decryptedId),
+                Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
                 ISBN = await _assetsService.GetIsbnAsync(decryptedId),
                 Year = asset.Year,
                 Cost = asset.Cost,
@@ -358,7 +358,7 @@ namespace Library.Controllers
             {
                 Id = id,
                 Title = asset.Title,
-                Director = _assetsService.GetAuthorOrDirector(decryptedId),
+                Director = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
                 Year = asset.Year,
                 Cost = asset.Cost,
                 ExistingPhotoPath = asset.ImageUrl,
@@ -440,7 +440,7 @@ namespace Library.Controllers
             {
                 Id = id,
                 Title = asset.Title,
-                Author = _assetsService.GetAuthorOrDirector(decryptedId),
+                Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
                 ISBN = await _assetsService.GetIsbnAsync(decryptedId),
                 Year = asset.Year,
                 LibraryBranchName = asset.Location.Name
