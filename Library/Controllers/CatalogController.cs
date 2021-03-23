@@ -480,7 +480,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> CheckoutAsync(string id)
+        public async Task<IActionResult> Checkout(string id)
         {
             if (id == null)
             {
@@ -511,7 +511,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> PlaceCheckoutAsync(string assetId, int libraryCardId)
+        public async Task<IActionResult> PlaceCheckout(string assetId, int libraryCardId)
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
 
@@ -521,7 +521,7 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> CheckInAsync(string id)
+        public async Task<IActionResult> CheckIn(string id)
         {
             if (id == null)
             {
@@ -537,7 +537,7 @@ namespace Library.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Patron, Employee, Admin")]
-        public async Task<IActionResult> HoldAsync(string id)
+        public async Task<IActionResult> Hold(string id)
         {
             if (id == null)
             {
@@ -572,7 +572,7 @@ namespace Library.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Patron, Employee, Admin")]
-        public async Task<IActionResult> PlaceHoldAsync(string assetId, int libraryCardId)
+        public async Task<IActionResult> PlaceHold(string assetId, int libraryCardId)
         {
             int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
 
@@ -603,7 +603,7 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> MarkLostAsync(string assetId)
+        public async Task<IActionResult> MarkLost(string assetId)
         {
             if (assetId == null)
             {
@@ -618,7 +618,7 @@ namespace Library.Controllers
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> MarkFoundAsync(string assetId)
+        public async Task<IActionResult> MarkFound(string assetId)
         {
             if (assetId == null)
             {
