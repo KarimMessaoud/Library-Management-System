@@ -59,11 +59,13 @@ namespace LibraryService
             return checkoutHistory;
         }
 
-        public IEnumerable<Hold> GetCurrentHolds(int id)
+        public async Task<IEnumerable<Hold>> GetCurrentHoldsAsync(int id)
         {
-            return _context.Holds
+            var currentHolds = await _context.Holds
                 .Include(x => x.LibraryAsset)
-                .Where(x => x.LibraryAsset.Id == id);
+                .Where(x => x.LibraryAsset.Id == id).ToListAsync();
+
+            return currentHolds;
         }
 
         public async Task<Checkout> GetLatestCheckoutAsync(int assetId)

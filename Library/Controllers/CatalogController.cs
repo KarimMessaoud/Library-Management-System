@@ -226,7 +226,9 @@ namespace Library.Controllers
                 return View("AssetNotFound", decryptedId);
             }
 
-            var currentHolds = _checkout.GetCurrentHolds(decryptedId)
+            var currentHolds = await _checkout.GetCurrentHoldsAsync(decryptedId);
+
+            var assetHoldModelCurrentHolds = currentHolds
                 .Select(x => new AssetHoldModel
                 {
                     PatronName = _checkout.GetCurrentHoldPatronName(x.Id),
@@ -248,7 +250,7 @@ namespace Library.Controllers
                 LatestCheckout = await _checkout.GetLatestCheckoutAsync(decryptedId),
                 PatronName = await _checkout.GetCurrentCheckoutPatronAsync(decryptedId),
                 CheckoutHistory = await _checkout.GetCheckoutHistoryAsync(decryptedId),
-                CurrentHolds = currentHolds
+                CurrentHolds = assetHoldModelCurrentHolds
             };
 
             return View(model);
@@ -558,9 +560,11 @@ namespace Library.Controllers
                 AssetId = id,
                 Title = asset.Title,
                 ImageUrl = asset.ImageUrl,
-                IsCheckedOut = await _checkout.IsCheckedOutAsync(decryptedId),
-                HoldCount = _checkout.GetCurrentHolds(decryptedId).Count()
+                IsCheckedOut = await _checkout.IsCheckedOutAsync(decryptedId)
             };
+
+            var currentholds = await _checkout.GetCurrentHoldsAsync(decryptedId);
+            model.HoldCount = currentholds.Count();
 
             return View(model);
         }

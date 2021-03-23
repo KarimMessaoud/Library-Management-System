@@ -24,8 +24,7 @@ namespace LibraryData
         Task ResetOverdueFeesAsync(string patronId);
 
         Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(int id);
-
-        IEnumerable<Hold> GetCurrentHolds(int id);
+        Task<IEnumerable<Hold>> GetCurrentHoldsAsync(int id);
         IEnumerable<Checkout> GetAll();
 
         string GetCurrentHoldPatronName(int id);
