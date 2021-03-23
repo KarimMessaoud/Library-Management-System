@@ -150,14 +150,14 @@ namespace Library.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> ChargeFeesAsync(string patronId)
+        public async Task<IActionResult> ChargeFees(string patronId)
         {
             await _checkout.ChargeOverdueFeesAsync(patronId);
             return RedirectToAction("Detail", new { id = patronId });
         }
 
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> ResetFeesAsync(string patronId)
+        public async Task<IActionResult> ResetFees(string patronId)
         {
             await _checkout.ResetOverdueFeesAsync(patronId);
             return RedirectToAction("Detail", new { id = patronId });
