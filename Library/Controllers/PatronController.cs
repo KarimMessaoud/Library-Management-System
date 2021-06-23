@@ -47,7 +47,7 @@ namespace Library.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             var allPatrons = await _patron.GetAllAsync();
-
+            
             if (!String.IsNullOrEmpty(searchString))
             {
                 allPatrons = allPatrons.Where(x => x.LastName.Contains(searchString));

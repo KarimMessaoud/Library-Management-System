@@ -43,7 +43,7 @@ namespace Library.Controllers
                 return View("NoIdFound");
             }
 
-            var branch = _branch.GetBranchById((int)id);
+            var branch = _branch.GetBranchById(id.Value);
 
             if (branch == null)
             {
@@ -60,16 +60,15 @@ namespace Library.Controllers
                 Description = branch.Description,
                 OpenDate = branch.OpenDate.ToString("yyyy-MM-dd"),
                 ImageUrl = branch.ImageUrl,
-                HoursOpen = _branch.GetBranchHours((int)id)
+                HoursOpen = _branch.GetBranchHours(id.Value)
             };
 
-            var branchAssets = await _branch.GetAssetsAsync((int)id);
-            var branchPatrons = await _branch.GetPatronsAsync((int)id);
+            var branchAssets = await _branch.GetAssetsAsync(id.Value);
 
             model.NumberOfAssets = branchAssets.Count();
             model.TotalAssetValue = branchAssets.Sum(x => x.Cost);
-            model.NumberOfPatrons = branchPatrons.Count();
-
+            model.NumberOfPatrons = (await _branch.GetPatronsAsync(id.Value)).Count();
+            
             return View(model);
         }
     }
