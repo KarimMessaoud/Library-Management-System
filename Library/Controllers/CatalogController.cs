@@ -104,7 +104,7 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                string uniqueFileName = ProcessUploadedBookFile(model);
+                string uniqueFileName = ProcessUploadedAssetFile(model);
 
                 var book = new Book
                 {
@@ -133,23 +133,6 @@ namespace Library.Controllers
             return View(model);
         }
 
-        private string ProcessUploadedBookFile(AssetCreateBookViewModel model)
-        {
-            string uniqueFileName = null;
-
-            if (model.Photo != null)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.Photo.CopyTo(fileStream);
-                }
-            }
-
-            return uniqueFileName;
-        }
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
@@ -164,7 +147,7 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                string uniqueFileName = ProcessUploadedVideoFile(model);
+                string uniqueFileName = ProcessUploadedAssetFile(model);
 
                 var video = new Video
                 {
@@ -192,7 +175,7 @@ namespace Library.Controllers
             return View(model);
         }
 
-        private string ProcessUploadedVideoFile(AssetCreateVideoViewModel model)
+        private string ProcessUploadedAssetFile(AssetCreateViewModel model)
         {
             string uniqueFileName = null;
 
@@ -316,13 +299,13 @@ namespace Library.Controllers
 
                 if (model.Photo != null)
                 {
-                    if (model.ExistingPhotoPath != null)
+                    if (model.ExistingPhotoPath != null && model.ExistingPhotoPath != "/images/")
                     {
                         string filePath = Path.Join(_webHostEnvironment.WebRootPath, model.ExistingPhotoPath);
                         System.IO.File.Delete(filePath);
                     }
 
-                    string uniqueFileName = ProcessUploadedBookFile(model);
+                    string uniqueFileName = ProcessUploadedAssetFile(model);
 
                     book.ImageUrl = "/images/" + uniqueFileName;
                 }
@@ -402,7 +385,7 @@ namespace Library.Controllers
                         System.IO.File.Delete(filePath);
                     }
 
-                    string uniqueFileName = ProcessUploadedVideoFile(model);
+                    string uniqueFileName = ProcessUploadedAssetFile(model);
 
                     video.ImageUrl = "/images/" + uniqueFileName;
                 }
