@@ -9,8 +9,8 @@
 {
     <h2 class="text-center my-4">@ViewBag.Title</h2>
     <div class="row">
-        <div  class="col-md-3 mr-auto text-center">
-            <a  class="btn btn-primary" style="width:auto" asp-controller="Patron" asp-action="Create">@ViewBag.Create</a>
+        <div class="col-md-3 mr-auto text-center">
+            <a class="btn btn-primary" style="width:auto" asp-controller="Patron" asp-action="Create">@ViewBag.Create</a>
         </div>
     </div>
     <div class="row">
@@ -50,7 +50,7 @@
             @foreach (var patron in @Model.Patrons)
             {
                 <tr>
-                    <td><a asp-controller="Patron" asp-action="Detail" asp-route-id="@patron.Id">View profile</a></td>
+                    <td><a asp-action="Detail" asp-route-id="@patron.Id"><i class="fas fa-user-tie"></i></a></td>
                     <td>@patron.LastName</td>
                     <td>@patron.FirstName</td>
                     <td>@patron.LibraryCardId</td>
@@ -73,3 +73,4 @@
         </tbody>
     </table>
 </div>
+<script src="https://kit.fontawesome.com/70d6ce711e.js" crossorigin="anonymous"></script>
