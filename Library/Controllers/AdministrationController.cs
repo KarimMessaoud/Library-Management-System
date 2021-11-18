@@ -311,9 +311,17 @@ namespace Library.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 Roles = userRoles,
-                Claims = userClaims.Select(x => x.Type + " : " + x.Value).ToList()
             };
 
+            List<AuxiliaryClaim> AuxiliaryClaims = new List<AuxiliaryClaim>();
+
+            foreach (var claim in userClaims)
+            {
+                if (claim.Value == "true") AuxiliaryClaims.Add(new AuxiliaryClaim { Type = claim.Type, Value = "Yes" });
+                else AuxiliaryClaims.Add(new AuxiliaryClaim { Type = claim.Type, Value = "No" });
+            }
+
+            model.Claims = AuxiliaryClaims.Select(x => x.Type + " : " + x.Value).ToList();
             return View(model);
         }
 
