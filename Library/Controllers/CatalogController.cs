@@ -47,16 +47,26 @@ namespace Library.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string searchString)
+        public async Task<IActionResult> Index(string searchString, string currentFilter, int? pageNumber)
         {
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewData["CurrentFilter"] = searchString;
+
             var assets = await _assetsService.GetAllAsync();
 
             var encryptedIdAssets = assets.Select(x => 
                 {
                     x.EncryptedId = protector.Protect(x.Id.ToString());
                     return x;
-                })
-                .OrderBy(x => x.Title);
+                }).OrderBy(x => x.Title);
 
 
             var listingResult = encryptedIdAssets
@@ -76,12 +86,11 @@ namespace Library.Controllers
                     .ToList();
             }
 
-            var model = new AssetIndexViewModel
-            {
-                Assets = listingResult
-            };
+            listingResult = listingResult.OrderBy(x => x.Title).ToList();
 
-            return View(model);
+            int pageSize = 10;
+
+            return View(PaginatedList<AssetIndexListingViewModel>.Create(listingResult.AsQueryable(), pageNumber ?? 1, pageSize));
         }
 
         [HttpGet]

@@ -81,17 +81,26 @@ body {
 }
 
 #catalogIndexTable {
-    font-size: 1.3em;
+    font-size: 1.1em;
 }
+
+    #catalogIndexTable th{
+        text-align: center;
+    }
 
     #catalogIndexTable td {
         vertical-align: middle;
+        text-align: center;
     }
 
     #catalogIndexTable tr:hover {
         background-color: #eee;
         color: black;
     }
+
+.table td[id="paginationDataCell"] {
+    border-top: none;
+}
 
 .branchInfo {
     padding-bottom: 30px;
