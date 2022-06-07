@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Library.Models.Branch;
 using LibraryData;
 using Microsoft.AspNetCore.Authorization;
@@ -11,9 +12,11 @@ namespace Library.Controllers
     public class BranchController : Controller
     {
         private readonly ILibraryBranch _branch;
-        public BranchController(ILibraryBranch branch)
+        private readonly IMapper _mapper;
+        public BranchController(ILibraryBranch branch, IMapper mapper)
         {
             _branch = branch;
+            _mapper = mapper;
         }
 
         public IActionResult Index()
@@ -51,17 +54,8 @@ namespace Library.Controllers
                 return View("BranchNotFound", id);
             }
 
-            var model = new BranchDetailViewModel()
-            {
-                Id = branch.Id,
-                Name = branch.Name,
-                Address = branch.Address,
-                Telephone = branch.Telephone,
-                Description = branch.Description,
-                OpenDate = branch.OpenDate.ToString("yyyy-MM-dd"),
-                ImageUrl = branch.ImageUrl,
-                HoursOpen = _branch.GetBranchHours(id.Value)
-            };
+            var model = _mapper.Map<BranchDetailViewModel>(branch);
+            model.HoursOpen = _branch.GetBranchHours(id.Value);
 
             var branchAssets = await _branch.GetAssetsAsync(id.Value);
 
