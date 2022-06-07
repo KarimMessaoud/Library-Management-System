@@ -1,4 +1,5 @@
-﻿using Library.Models.Administration;
+﻿using AutoMapper;
+using Library.Models.Administration;
 using LibraryData.Models.Account;
 using LibraryData.Models.Administration;
 using Microsoft.AspNetCore.Authorization;
@@ -19,14 +20,17 @@ namespace Library.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<AdministrationController> _logger;
+        private readonly IMapper _mapper;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         UserManager<User> userManager,
-                                        ILogger<AdministrationController> logger)
+                                        ILogger<AdministrationController> logger, 
+                                        IMapper mapper)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -303,15 +307,8 @@ namespace Library.Controllers
             var userRoles = await _userManager.GetRolesAsync(user);
             var userClaims = await _userManager.GetClaimsAsync(user);
 
-            var model = new EditUserViewModel
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                UserName = user.UserName,
-                Email = user.Email,
-                Roles = userRoles,
-            };
+            var model = _mapper.Map<EditUserViewModel>(user);
+            model.Roles = userRoles;
 
             List<AuxiliaryClaim> AuxiliaryClaims = new List<AuxiliaryClaim>();
 
@@ -328,7 +325,6 @@ namespace Library.Controllers
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
-
             var user = await _userManager.FindByIdAsync(model.Id);
 
             if (user == null)
