@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using LibraryData;
 using Hangfire;
 using LibraryData.Models;
+using AutoMapper;
 
 namespace Library.Controllers
 {
@@ -18,16 +19,19 @@ namespace Library.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
         private readonly ILibraryBranch _branch;
+        private readonly IMapper _mapper;
 
         public AccountController(UserManager<User> userManager,
                                  SignInManager<User> signInManager,
                                  ILogger<AccountController> logger,
-                                 ILibraryBranch branch)
+                                 ILibraryBranch branch, 
+                                 IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _branch = branch;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -60,22 +64,15 @@ namespace Library.Controllers
         {
             if(ModelState.IsValid)
             {
-                var user = new User 
-                { 
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    UserName = model.Email, 
-                    Email = model.Email,
-                    Address = model.Address,
-                    DateOfBirth = model.DateOfBirth,
-                    PhoneNumber = model.Telephone,
-                    LibraryCard = new LibraryCard
-                    {
-                        Fees = 0,
-                        Created = DateTime.Now
-                    },
-                    HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName)
+                var user = _mapper.Map<User>(model);
+
+                user.LibraryCard = new LibraryCard
+                {
+                    Fees = 0,
+                    Created = DateTime.Now
                 };
+
+                user.HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName);
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
