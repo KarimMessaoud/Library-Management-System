@@ -81,23 +81,18 @@ namespace LibraryService
 
         public async Task<Book> GetBookByIdAsync(int id)
         {
-            return await _context.Books
-                .Include(x => x.Status)
-                .Include(x => x.Location)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Books.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Video> GetVideoByIdAsync(int id)
         {
-            return await _context.Videos
-                .Include(x => x.Status)
-                .Include(x => x.Location)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Videos.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<string> GetCurrentLocationNameAsync(int id)
         {
             var asset = await _context.LibraryAssets
+                .Include(x => x.Location)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             return asset.Location.Name;
