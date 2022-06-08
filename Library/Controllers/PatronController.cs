@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using AutoMapper;
+using Hangfire;
 using Library.Models.Patron;
 using Library.Security;
 using LibraryData;
@@ -25,6 +26,7 @@ namespace Library.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly ICheckout _checkout;
         private readonly IDataProtector protector;
+        private readonly IMapper _mapper;
         public PatronController(IPatron patron,
             ILibraryBranch branch,
             UserManager<User> userManager,
@@ -32,7 +34,8 @@ namespace Library.Controllers
             ILogger<AccountController> logger,
             ICheckout checkout,
             IDataProtectionProvider dataProtectionProvider,
-            DataProtectionPurposeStrings dataProtectionPurposeStrings)
+            DataProtectionPurposeStrings dataProtectionPurposeStrings, 
+            IMapper mapper)
         {
             _patron = patron;
             _branch = branch;
@@ -41,6 +44,7 @@ namespace Library.Controllers
             _logger = logger;
             _checkout = checkout;
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
+            _mapper = mapper;
         }
 
         [Authorize(Roles = "Admin, Employee")]
@@ -62,8 +66,8 @@ namespace Library.Controllers
                 OverdueFees = x.LibraryCard.Fees,
                 HomeLibraryBranch = x.HomeLibraryBranch.Name
             })
-                .OrderBy(x => x.LastName)
-                .ToList();
+            .OrderBy(x => x.LastName)
+            .ToList();
 
             var model = new PatronIndexModel()
             {
@@ -88,22 +92,15 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User
+                var user = _mapper.Map<User>(model);
+
+                user.LibraryCard = new LibraryCard
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    UserName = model.Email,
-                    Email = model.Email,
-                    Address = model.Address,
-                    DateOfBirth = model.DateOfBirth,
-                    PhoneNumber = model.Telephone,
-                    LibraryCard = new LibraryCard
-                    {
-                        Fees = 0,
-                        Created = DateTime.Now
-                    },
-                    HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName)
+                    Fees = 0,
+                    Created = DateTime.Now
                 };
+
+                user.HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName);
 
                 var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -189,21 +186,11 @@ namespace Library.Controllers
                 return View("~/Views/Administration/AccessDenied.cshtml");
             }
 
-            var model = new PatronDetailModel()
-            {
-                Id = patron.Id,
-                LastName = patron.LastName,
-                FirstName = patron.FirstName,
-                Address = patron.Address,
-                HomeLibraryBranch = patron.HomeLibraryBranch.Name,
-                MemberSince = patron.LibraryCard.Created,
-                OverdueFees = patron.LibraryCard.Fees,
-                LibraryCardId = patron.LibraryCard.Id,
-                Telephone = patron.PhoneNumber,
-                AssetsCheckedOut = await _patron.GetCheckoutsAsync(id) ?? new List<Checkout>(),
-                CheckoutHistory = await _patron.GetCheckoutHistoryAsync(id),
-                Holds = await _patron.GetHoldsAsync(id)
-            };
+            var model = _mapper.Map<PatronDetailModel>(patron);
+
+            model.AssetsCheckedOut = await _patron.GetCheckoutsAsync(id) ?? new List<Checkout>();
+            model.CheckoutHistory = await _patron.GetCheckoutHistoryAsync(id);
+            model.Holds = await _patron.GetHoldsAsync(id);
 
             //Encrypt Library Assets' Ids in order to be able to get to details of the checkout items
             //from Patron's detail view  
@@ -241,16 +228,7 @@ namespace Library.Controllers
                 return View("~/Views/Administration/AccessDenied.cshtml");
             }
 
-            var model = new PatronEditViewModel
-            {
-                Id = patron.Id,
-                FirstName = patron.FirstName,
-                LastName = patron.LastName,
-                Address = patron.Address,
-                DateOfBirth = patron.DateOfBirth,
-                HomeLibraryBranchName = patron.HomeLibraryBranch.Name,
-                Telephone = patron.PhoneNumber
-            };
+            var model = _mapper.Map<PatronEditViewModel>(patron);
 
             return View(model);
         }
@@ -314,16 +292,7 @@ namespace Library.Controllers
                 return View("DeletingForbidden", id);
             }
 
-            var model = new PatronEditViewModel
-            {
-                Id = patron.Id,
-                FirstName = patron.FirstName,
-                LastName = patron.LastName,
-                Address = patron.Address,
-                DateOfBirth = patron.DateOfBirth,
-                HomeLibraryBranchName = patron.HomeLibraryBranch.Name,
-                Telephone = patron.PhoneNumber
-            };
+            var model = _mapper.Map<PatronEditViewModel>(patron);
 
             return View(model);
         }
