@@ -343,7 +343,9 @@ namespace LibraryService
         
         public string GetCurrentHoldPatronName(int holdId)
         {
-            var hold = _context.Holds.FirstOrDefault(x => x.Id == holdId);
+            var hold = _context.Holds
+                .Include(x => x.LibraryCard)
+                .FirstOrDefault(x => x.Id == holdId);
 
             var cardId = hold?.LibraryCard.Id;
 

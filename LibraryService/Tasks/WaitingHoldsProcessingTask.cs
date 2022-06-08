@@ -40,7 +40,6 @@ namespace LibraryService.Tasks
                     if (checkout == null)
                     {
                         var asset = _context.LibraryAssets
-                            .Include(x => x.Status)
                             .FirstOrDefault(x => x.Id == hold.LibraryAsset.Id);
 
                         var patron = _context.Users
