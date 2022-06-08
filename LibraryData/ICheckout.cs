@@ -1,6 +1,7 @@
 ﻿using LibraryData.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryData
@@ -24,8 +25,8 @@ namespace LibraryData
         Task ResetOverdueFeesAsync(string patronId);
 
         Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(int id);
-        Task<IEnumerable<Hold>> GetCurrentHoldsAsync(int id);
-        IEnumerable<Checkout> GetAll();
+        Task<IQueryable<Hold>> GetCurrentHoldsAsync(int id);
+        Task<IEnumerable<Checkout>> GetAllAsync();
 
         string GetCurrentHoldPatronName(int id);
         DateTime GetCurrentHoldPlaced(int id);

@@ -547,8 +547,6 @@ namespace Library.Controllers
                 .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
             var hold = await _context.Holds
-                .Include(x => x.LibraryCard)
-                .Include(x => x.LibraryAsset)
                 .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == decryptedId);
 
 
