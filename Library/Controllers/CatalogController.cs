@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Hangfire;
 using Library.Models.Catalog;
 using Library.Models.Checkout;
@@ -26,6 +27,7 @@ namespace Library.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICheckout _checkout;
         private readonly ILogger<CatalogController> _logger;
+        private readonly IMapper _mapper;
 
         public CatalogController(
                         ILibraryAssetService assetsService,
@@ -35,7 +37,8 @@ namespace Library.Controllers
                         LibraryContext context,
                         IWebHostEnvironment webHostEnvironment,
                         ICheckout checkout,
-                        ILogger<CatalogController> logger)
+                        ILogger<CatalogController> logger, 
+                        IMapper mapper)
         {
             _assetsService = assetsService;
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
@@ -44,6 +47,7 @@ namespace Library.Controllers
             _webHostEnvironment = webHostEnvironment;
             _checkout = checkout;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [AllowAnonymous]
@@ -115,18 +119,11 @@ namespace Library.Controllers
             {
                 string uniqueFileName = ProcessUploadedAssetFile(model);
 
-                var book = new Book
-                {
-                    Title = model.Title,
-                    Author = model.Author,
-                    ISBN = model.ISBN,
-                    Year = model.Year,
-                    Status = _context.Statuses.FirstOrDefault(x => x.Name == "Available"),
-                    Cost = model.Cost,
-                    ImageUrl = "/images/" + uniqueFileName,
-                    NumberOfCopies = model.NumberOfCopies,
-                    Location = _branch.GetBranchByName(model.LibraryBranchName)
-                };
+                var book = _mapper.Map<Book>(model);
+
+                book.Status = _context.Statuses.FirstOrDefault(x => x.Name == "Available");
+                book.ImageUrl = "/images/" + uniqueFileName;
+                book.Location = _branch.GetBranchByName(model.LibraryBranchName);
 
                 //Prevent exceptions while searching when the author of the book is unknown
                 if (book.Author == null)
@@ -158,17 +155,11 @@ namespace Library.Controllers
             {
                 string uniqueFileName = ProcessUploadedAssetFile(model);
 
-                var video = new Video
-                {
-                    Title = model.Title,
-                    Director = model.Director,
-                    Year = model.Year,
-                    Status = _context.Statuses.FirstOrDefault(x => x.Name == "Available"),
-                    Cost = model.Cost,
-                    ImageUrl = "/images/" + uniqueFileName,
-                    NumberOfCopies = model.NumberOfCopies,
-                    Location = _branch.GetBranchByName(model.LibraryBranchName)
-                };
+                var video =_mapper.Map<Video>(model);
+
+                video.Status = _context.Statuses.FirstOrDefault(x => x.Name == "Available");
+                video.ImageUrl = "/images/" + uniqueFileName;
+                video.Location = _branch.GetBranchByName(model.LibraryBranchName);
 
                 //Prevent exceptions while searching when the director of the video is unknown
                 if (video.Director == null)
@@ -227,26 +218,22 @@ namespace Library.Controllers
                     HoldPlaced = _checkout.GetCurrentHoldPlaced(x.Id)
                 });
 
-            var model = new AssetDetailModel
-            {
-                AssetId = id,
-                Title = asset.Title,
-                AuthorOrDirector = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
-                Type = _assetsService.GetType(decryptedId),
-                Year = asset.Year,
-                ISBN = await _assetsService.GetIsbnAsync(decryptedId),
-                Status = asset.Status.Name,
-                Cost = asset.Cost,
-                CurrentLocation = await _assetsService.GetCurrentLocationNameAsync(decryptedId),
-                ImageUrl = asset.ImageUrl,
-                LatestCheckout = await _checkout.GetLatestCheckoutAsync(decryptedId),
-                PatronName = await _checkout.GetCurrentCheckoutPatronAsync(decryptedId),
-                CheckoutHistory = await _checkout.GetCheckoutHistoryAsync(decryptedId),
-                CurrentHolds = assetHoldModelCurrentHolds
-            };
+            var model = _mapper.Map<AssetDetailModel>(asset);
 
+            model.AssetId = id;
+            model.AuthorOrDirector = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
+            model.Type = _assetsService.GetType(decryptedId);
+            model.ISBN = await _assetsService.GetIsbnAsync(decryptedId);
+            model.CurrentLocation = await _assetsService.GetCurrentLocationNameAsync(decryptedId);
+            model.LatestCheckout = await _checkout.GetLatestCheckoutAsync(decryptedId);
+            model.PatronName = await _checkout.GetCurrentCheckoutPatronAsync(decryptedId);
+            model.CheckoutHistory = await _checkout.GetCheckoutHistoryAsync(decryptedId);
+            model.CurrentHolds = assetHoldModelCurrentHolds;
+            
             return View(model);
         }
+
+
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
@@ -267,18 +254,11 @@ namespace Library.Controllers
                 return View("AssetNotFound", decryptedId);
             }
 
-            var model = new AssetEditBookViewModel
-            {
-                Id = id,
-                Title = asset.Title,
-                Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
-                ISBN = await _assetsService.GetIsbnAsync(decryptedId),
-                Year = asset.Year,
-                Cost = asset.Cost,
-                ExistingPhotoPath = asset.ImageUrl,
-                NumberOfCopies = asset.NumberOfCopies,
-                LibraryBranchName = asset.Location.Name
-            };
+            var model = _mapper.Map<AssetEditBookViewModel>(asset);
+
+            model.Id = id;
+            model.Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
+            model.ISBN = await _assetsService.GetIsbnAsync(decryptedId);
 
             return View(model);
         }
@@ -329,85 +309,6 @@ namespace Library.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> EditVideo(string id)
-        {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
-
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
-
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var model = new AssetEditVideoViewModel
-            {
-                Id = id,
-                Title = asset.Title,
-                Director = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
-                Year = asset.Year,
-                Cost = asset.Cost,
-                ExistingPhotoPath = asset.ImageUrl,
-                NumberOfCopies = asset.NumberOfCopies,
-                LibraryBranchName = asset.Location.Name
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> EditVideo(AssetEditVideoViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
-
-                var video = await _assetsService.GetVideoByIdAsync(decryptedId);
-
-                if (video == null)
-                {
-                    Response.StatusCode = 404;
-                    return View("AssetNotFound", decryptedId);
-                }
-
-                video.Title = model.Title;
-                video.Director = model.Director;
-                video.Year = model.Year;
-                video.Cost = model.Cost;
-                video.NumberOfCopies = model.NumberOfCopies;
-
-                if (model.Photo != null)
-                {
-                    if (model.ExistingPhotoPath != null)
-                    {
-                        string filePath = Path.Join(_webHostEnvironment.WebRootPath, model.ExistingPhotoPath);
-                        System.IO.File.Delete(filePath);
-                    }
-
-                    string uniqueFileName = ProcessUploadedAssetFile(model);
-
-                    video.ImageUrl = "/images/" + uniqueFileName;
-                }
-
-                video.Location = _branch.GetBranchByName(model.LibraryBranchName);
-
-                await _assetsService.UpdateAsync(video);
-
-                return RedirectToAction("Detail", "Catalog", new { id = model.Id });
-            }
-
-            return View(model);
-        }
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
@@ -430,15 +331,11 @@ namespace Library.Controllers
                 return View("AssetNotFound", decryptedId);
             }
 
-            var model = new AssetEditBookViewModel
-            {
-                Id = id,
-                Title = asset.Title,
-                Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId),
-                ISBN = await _assetsService.GetIsbnAsync(decryptedId),
-                Year = asset.Year,
-                LibraryBranchName = asset.Location.Name
-            };
+            var model = _mapper.Map<AssetEditBookViewModel>(asset);
+
+            model.Id = id;
+            model.Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
+            model.ISBN = await _assetsService.GetIsbnAsync(decryptedId);
 
             return View(model);
         }
