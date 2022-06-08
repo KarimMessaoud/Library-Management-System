@@ -1,13 +1,14 @@
 ﻿using LibraryData.Models;
 using LibraryData.Models.Account;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LibraryData
 {
     public interface ILibraryBranch
     {
-        IEnumerable<LibraryBranch> GetAll();
+        IQueryable<LibraryBranch> GetAll();
         IEnumerable<string> GetBranchHours(int branchId);
 
         Task<IEnumerable<User>> GetPatronsAsync(int branchId);

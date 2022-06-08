@@ -35,11 +35,9 @@ namespace LibraryService
                 .FirstOrDefault(x => x.Name == branchName);
         }
 
-        public IEnumerable<LibraryBranch> GetAll()
+        public IQueryable<LibraryBranch> GetAll()
         {
-            return _context.LibraryBranches
-                .Include(x => x.Patrons)
-                .Include(x => x.LibraryAssets);
+            return _context.LibraryBranches;
         }
 
         public async Task<IEnumerable<LibraryAsset>> GetAssetsAsync(int branchId)
