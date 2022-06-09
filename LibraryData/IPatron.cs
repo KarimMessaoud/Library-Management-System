@@ -12,7 +12,7 @@ namespace LibraryData
 
         Task<IQueryable<User>> GetAllAsync();
         Task<IEnumerable<CheckoutHistory>> GetCheckoutHistoryAsync(string patronId);
-        Task<IEnumerable<Hold>> GetHoldsAsync(string patronId);
-        Task<IEnumerable<Checkout>> GetCheckoutsAsync(string patronId);
+        Task<IQueryable<Hold>> GetHoldsAsync(string patronId);
+        Task<IQueryable<Checkout>> GetCheckoutsAsync(string patronId);
     }
 }

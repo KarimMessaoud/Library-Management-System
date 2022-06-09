@@ -22,9 +22,7 @@ namespace LibraryService
 
         public async Task<User> GetAsync(string id)
         {
-            var allPatrons = await GetAllAsync();
-
-            var patron = await allPatrons.FirstOrDefaultAsync(x => x.Id == id);
+            var patron = await (await GetAllAsync()).FirstOrDefaultAsync(x => x.Id == id);
 
             return patron;
         }
@@ -56,25 +54,23 @@ namespace LibraryService
                 .OrderByDescending(x => x.CheckedOut);
         }
 
-        public async Task<IEnumerable<Checkout>> GetCheckoutsAsync(string patronId)
+        public async Task<IQueryable<Checkout>> GetCheckoutsAsync(string patronId)
         {
             var patron = await _userManager.FindByIdAsync(patronId);
             var cardId = patron.LibraryCard.Id;
 
             return _context.Checkouts
                 .Include(x => x.LibraryAsset)
-                .Include(x => x.LibraryCard)
                 .Where(x => x.LibraryCard.Id == cardId);
         }
 
-        public async Task<IEnumerable<Hold>> GetHoldsAsync(string patronId)
+        public async Task<IQueryable<Hold>> GetHoldsAsync(string patronId)
         {
             var patron = await _userManager.FindByIdAsync(patronId);
             var cardId = patron.LibraryCard.Id;
 
             return _context.Holds
                 .Include(x => x.LibraryAsset)
-                .Include(x => x.LibraryCard)
                 .Where(x => x.LibraryCard.Id == cardId)
                 .OrderByDescending(x => x.HoldPlaced);
         }

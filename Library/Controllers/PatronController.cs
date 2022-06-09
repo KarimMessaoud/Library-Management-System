@@ -188,7 +188,10 @@ namespace Library.Controllers
 
             var model = _mapper.Map<PatronDetailModel>(patron);
 
-            model.AssetsCheckedOut = await _patron.GetCheckoutsAsync(id) ?? new List<Checkout>();
+            var assetsCheckedOut = await _patron.GetCheckoutsAsync(id);
+            if (assetsCheckedOut != null) model.AssetsCheckedOut = assetsCheckedOut;
+            else model.AssetsCheckedOut = new List<Checkout>();
+
             model.CheckoutHistory = await _patron.GetCheckoutHistoryAsync(id);
             model.Holds = await _patron.GetHoldsAsync(id);
 
