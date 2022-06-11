@@ -22,5 +22,11 @@ namespace LibraryData
         public DbSet<Status> Statuses { get; set; }
         public DbSet<LibraryAsset> LibraryAssets { get; set; }
         public DbSet<Hold> Holds { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.ApplyConfigurationsFromAssembly(typeof(LibraryContext).Assembly);
+        }
     }
 }

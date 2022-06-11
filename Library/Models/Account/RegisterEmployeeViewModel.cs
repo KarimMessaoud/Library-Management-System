@@ -20,7 +20,7 @@ namespace Library.Models.Account
 
         [Required] 
         [EmailAddress] 
-        [MaxLength(50)] 
+        [MaxLength(256)] 
         [Display(Name = "Email address")]
         [Remote(action: "IsEmailInUse", controller: "Account")]
         public string Email { get; set; }
