@@ -3,7 +3,7 @@
 Built in ASP.NET Core 3.1 and C#. </br>
 Database Management System: SQL Server 2019.
 
-<img width="957" alt="Screenshot" src="https://user-images.githubusercontent.com/50749737/96971823-f55de500-1515-11eb-847e-9d274f7b2554.png">
+<img width="957" alt="Claramontana" src="https://user-images.githubusercontent.com/50749737/173199610-e0d02f41-4ca8-453e-b7e1-57da2adda2f3.png">
 
 <h2>Description</h2>
 An integrated library system to lend and manage library assets. The software helps to control all the library items, for example,
