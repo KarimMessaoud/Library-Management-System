@@ -17,6 +17,8 @@
     <Compile Remove="Migrations\20220613171424_Configure Checkout entity with FluentAPI.Designer.cs" />
     <Compile Remove="Migrations\20220613172027_Configure Checkout entity with FluentAPI.cs" />
     <Compile Remove="Migrations\20220613172027_Configure Checkout entity with FluentAPI.Designer.cs" />
+    <Compile Remove="Migrations\20220613190835_Configure CheckoutHistory entity with FluentAPI.cs" />
+    <Compile Remove="Migrations\20220613190835_Configure CheckoutHistory entity with FluentAPI.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

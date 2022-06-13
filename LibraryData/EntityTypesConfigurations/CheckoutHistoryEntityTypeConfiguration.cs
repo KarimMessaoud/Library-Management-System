@@ -4,17 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LibraryData.EntityTypesConfigurations
 {
-    public class CheckoutEntityTypeConfiguration : IEntityTypeConfiguration<Checkout>
+    public class CheckoutHistoryEntityTypeConfiguration : IEntityTypeConfiguration<CheckoutHistory>
     {
-        public void Configure(EntityTypeBuilder<Checkout> builder)
+        public void Configure(EntityTypeBuilder<CheckoutHistory> builder)
         {
             builder.HasOne(x => x.LibraryAsset)
-                .WithOne(x => x.Checkout)
-                .HasForeignKey<Checkout>(x => x.LibraryAssetId)
+                .WithMany()
                 .IsRequired();
 
             builder.HasOne(x => x.LibraryCard)
-                .WithMany(x => x.Checkouts)
+                .WithMany()
+                .IsRequired();
+
+            builder.Property(x => x.CheckedOut)
                 .IsRequired();
         }
     }
