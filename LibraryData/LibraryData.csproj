@@ -7,6 +7,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20220611202446_Configure User entity with Fluent API.cs" />
     <Compile Remove="Migrations\20220611202446_Configure User entity with Fluent API.Designer.cs" />
+    <Compile Remove="Migrations\20220613153535_Configure LibraryAsset entity with FluentAPI.cs" />
+    <Compile Remove="Migrations\20220613153535_Configure LibraryAsset entity with FluentAPI.Designer.cs" />
+    <Compile Remove="Migrations\20220613154004_Configure LibraryAsset entity with FluentAPI.cs" />
+    <Compile Remove="Migrations\20220613154004_Configure LibraryAsset entity with FluentAPI.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
