@@ -11,6 +11,12 @@
     <Compile Remove="Migrations\20220613153535_Configure LibraryAsset entity with FluentAPI.Designer.cs" />
     <Compile Remove="Migrations\20220613154004_Configure LibraryAsset entity with FluentAPI.cs" />
     <Compile Remove="Migrations\20220613154004_Configure LibraryAsset entity with FluentAPI.Designer.cs" />
+    <Compile Remove="Migrations\20220613165102_Configure Checkout entity with FluentAPI.cs" />
+    <Compile Remove="Migrations\20220613165102_Configure Checkout entity with FluentAPI.Designer.cs" />
+    <Compile Remove="Migrations\20220613171424_Configure Checkout entity with FluentAPI.cs" />
+    <Compile Remove="Migrations\20220613171424_Configure Checkout entity with FluentAPI.Designer.cs" />
+    <Compile Remove="Migrations\20220613172027_Configure Checkout entity with FluentAPI.cs" />
+    <Compile Remove="Migrations\20220613172027_Configure Checkout entity with FluentAPI.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
