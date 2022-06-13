@@ -10,11 +10,17 @@ namespace LibraryData.EntityTypesConfigurations
         {
             builder.Ignore(x => x.EncryptedId);
 
-            builder.HasOne(x => x.Location).WithMany(x => x.LibraryAssets).IsRequired();
+            builder.HasOne(x => x.Location)
+                .WithMany(x => x.LibraryAssets)
+                .IsRequired();
 
-            builder.HasOne(x => x.Status);
+            builder.HasOne(x => x.Status)
+                .WithMany()
+                .IsRequired();
 
-            builder.Property(x => x.Title).HasMaxLength(250).IsRequired();
+            builder.Property(x => x.Title)
+                .HasMaxLength(250)
+                .IsRequired();
 
             builder.Property(x => x.Cost).HasColumnType("decimal(10,2)");
 
