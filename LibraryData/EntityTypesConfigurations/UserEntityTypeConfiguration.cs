@@ -33,7 +33,6 @@ namespace LibraryData.EntityTypesConfigurations
 
                 builder.Property(x => x.DateOfBirth)
                        .HasColumnType("date")
-                       .HasMaxLength(100)
                        .IsRequired();
                 
 
