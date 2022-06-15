@@ -21,6 +21,8 @@
     <Compile Remove="Migrations\20220613190835_Configure CheckoutHistory entity with FluentAPI.Designer.cs" />
     <Compile Remove="Migrations\20220615101306_Change ISBN property in Book entity to be of type varchar.cs" />
     <Compile Remove="Migrations\20220615101306_Change ISBN property in Book entity to be of type varchar.Designer.cs" />
+    <Compile Remove="Migrations\20220615105822_Marked all the rest navigation properties as virtual.cs" />
+    <Compile Remove="Migrations\20220615105822_Marked all the rest navigation properties as virtual.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,7 +9,7 @@ namespace LibraryData.Models
         public string EncryptedId { get; set; }
         public string Title { get; set; }
         public int Year { get; set; }
-        public Status Status { get; set; }
+        public virtual Status Status { get; set; }
         public decimal Cost { get; set; }
         public string ImageUrl { get; set; }
         public int NumberOfCopies { get; set; }
