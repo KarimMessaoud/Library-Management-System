@@ -11,8 +11,8 @@ namespace LibraryData.EntityTypesConfigurations
         public void Configure(EntityTypeBuilder<User> builder)
             {
                 builder.HasOne(x => x.LibraryCard)
-                    .WithOne(x => x.Patron)
-                    .HasForeignKey<LibraryCard>(x => x.PatronId);
+                    .WithOne()
+                    .HasForeignKey<User>(x => x.LibraryCardId);
 
                 builder.HasOne(x => x.HomeLibraryBranch)
                     .WithMany(x => x.Patrons)
