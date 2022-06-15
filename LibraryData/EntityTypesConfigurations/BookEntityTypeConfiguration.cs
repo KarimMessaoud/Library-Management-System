@@ -8,9 +8,13 @@ namespace LibraryData.EntityTypesConfigurations
     {
         public void Configure(EntityTypeBuilder<Book> builder)
         {
-            builder.Property(x => x.ISBN).HasMaxLength(13);
+            builder.Property(x => x.ISBN)
+                .HasMaxLength(13)
+                .IsUnicode(false)
+                .IsFixedLength();
 
-            builder.Property(x => x.Author).HasMaxLength(200);
+            builder.Property(x => x.Author)
+                .HasMaxLength(200);
         }
     }
 }
