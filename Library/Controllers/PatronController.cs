@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Hangfire;
 using Library.Models.Patron;
+using Library.Queries;
 using Library.Security;
 using LibraryData;
 using LibraryData.Models;
 using LibraryData.Models.Account;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +21,7 @@ namespace Library.Controllers
 {
     public class PatronController : Controller
     {
+        private readonly IMediator _mediator;
         private readonly IPatron _patron;
         private readonly ILibraryBranch _branch;
         private readonly UserManager<User> _userManager;
@@ -27,7 +30,8 @@ namespace Library.Controllers
         private readonly ICheckout _checkout;
         private readonly IDataProtector protector;
         private readonly IMapper _mapper;
-        public PatronController(IPatron patron,
+        public PatronController(IMediator mediator,
+            IPatron patron,
             ILibraryBranch branch,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -37,6 +41,7 @@ namespace Library.Controllers
             DataProtectionPurposeStrings dataProtectionPurposeStrings, 
             IMapper mapper)
         {
+            _mediator = mediator;
             _patron = patron;
             _branch = branch;
             _userManager = userManager;
@@ -50,32 +55,7 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Index(string searchString)
         {
-            var allPatrons = await _patron.GetAllAsync();
-            
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                allPatrons = allPatrons.Where(x => x.LastName.Contains(searchString));
-            }
-
-            var patronModels = allPatrons.Select(x => new PatronDetailModel()
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                LibraryCardId = x.LibraryCard.Id,
-                OverdueFees = x.LibraryCard.Fees,
-                HomeLibraryBranch = x.HomeLibraryBranch.Name
-            })
-            .OrderBy(x => x.LastName)
-            .ToList();
-
-            var model = new PatronIndexModel()
-            {
-                Patrons = patronModels
-            };
-
-
-            return View(model);
+            return View(await _mediator.Send(new GetAllPatronsQuery(searchString)));
         }
 
         [HttpGet]
