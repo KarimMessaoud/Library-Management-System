@@ -9,9 +9,9 @@ namespace LibraryData.EntityTypesConfigurations
         public void Configure(EntityTypeBuilder<Hold> builder)
         {
             builder.HasOne(x => x.LibraryAsset)
-                .WithOne()
-                .HasForeignKey<Hold>(x => x.LibraryAssetId)
+                .WithMany()
                 .IsRequired();
+            //.HasForeignKey<Hold>(x => x.LibraryAssetId)
 
             builder.HasOne(x => x.LibraryCard)
                 .WithMany()

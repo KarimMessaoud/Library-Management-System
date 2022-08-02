@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Library.Queries
+namespace Library.Queries.Patron
 {
     public class GetAllPatronsQuery : IRequest<PatronIndexModel> 
     {

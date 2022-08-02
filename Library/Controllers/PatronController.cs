@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Hangfire;
+using Library.Commands.Patron;
+using Library.Enums;
 using Library.Models.Patron;
-using Library.Queries;
+using Library.Queries.Patron;
 using Library.Security;
 using LibraryData;
 using LibraryData.Models;
@@ -13,8 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Library.Controllers
@@ -144,42 +144,16 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee, Patron")]
         public async Task<IActionResult> Detail(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var model = await _mediator.Send(new GetPatronByIdQuery(id));
 
-            var patron = await _patron.GetAsync(id);
+            if(model == null) return View("PatronNotFound", id);
 
-            if (patron == null)
-            {
-                Response.StatusCode = 404;
-                return View("PatronNotFound", id);
-            }
-   
+
             // Logged in patron can see only his own profile
-            if (User.IsInRole("Patron") 
-                && !User.IsInRole("Employee")
-                && !User.IsInRole("Admin")
+            if (User.IsInRole("Patron") && !User.IsInRole("Employee") && !User.IsInRole("Admin")
                 && _userManager.GetUserId(User) != id)
             {
                 return View("~/Views/Administration/AccessDenied.cshtml");
-            }
-
-            var model = _mapper.Map<PatronDetailModel>(patron);
-
-            var assetsCheckedOut = await _patron.GetCheckoutsAsync(id);
-            if (assetsCheckedOut != null) model.AssetsCheckedOut = assetsCheckedOut;
-            else model.AssetsCheckedOut = new List<Checkout>();
-
-            model.CheckoutHistory = await _patron.GetCheckoutHistoryAsync(id);
-            model.Holds = await _patron.GetHoldsAsync(id);
-
-            //Encrypt Library Assets' Ids in order to be able to get to details of the checkout items
-            //from Patron's detail view  
-            foreach (var item in model.AssetsCheckedOut)
-            {
-                item.LibraryAsset.EncryptedId = protector.Protect(item.LibraryAsset.Id.ToString());
             }
 
             return View(model);
@@ -189,29 +163,16 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee, Patron")]
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var model = await _mediator.Send(new EditPatronQuery(id));
 
-            var patron = await _patron.GetAsync(id);
-
-            if (patron == null)
-            {
-                Response.StatusCode = 404;
-                return View("PatronNotFound", id);
-            }
+            if(model == null) return View("PatronNotFound", id);
 
             // Logged in patron can see only his own profile
-            if (User.IsInRole("Patron")
-                && !User.IsInRole("Employee")
-                && !User.IsInRole("Admin")
+            if (User.IsInRole("Patron") && !User.IsInRole("Employee") && !User.IsInRole("Admin")
                 && _userManager.GetUserId(User) != id)
             {
                 return View("~/Views/Administration/AccessDenied.cshtml");
             }
-
-            var model = _mapper.Map<PatronEditViewModel>(patron);
 
             return View(model);
         }
@@ -223,24 +184,10 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                var patron = await _patron.GetAsync(model.Id);
+                var patron = await _mediator.Send(new EditPatronCommand(model));
 
-                if (patron == null)
-                {
-                    Response.StatusCode = 404;
-                    return View("PatronNotFound", model.Id);
-                }
-
-                patron.FirstName = model.FirstName;
-                patron.LastName = model.LastName;
-                patron.Address = model.Address;
-                patron.DateOfBirth = model.DateOfBirth;
-                patron.PhoneNumber = model.Telephone;
-                patron.HomeLibraryBranch = _branch.GetBranchByName(model.HomeLibraryBranchName);
-
-                await _userManager.UpdateAsync(patron);
-
-                return RedirectToAction("Index", "Patron", new { id = patron.Id });
+                if(patron == null) return View("PatronNotFound", model.Id);
+                else return RedirectToAction("Index", "Patron", new { id = patron.Id });
             }
 
             return View(model);
@@ -250,32 +197,14 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var model = await _mediator.Send(new DeletePatronQuery(id));
 
-            var patron = await _patron.GetAsync(id);
+            if(model == null) return View("PatronNotFound", id);
 
-            if (patron == null)
-            {
-                Response.StatusCode = 404;
-                return View("PatronNotFound", id);
-            }
-
-            //Check if there are any items that were checked out by the patron and not turned back 
-            //or if the patron has placed hold on them. 
-            // If so do not allow to delete this patron.
-            var checkouts = await _patron.GetCheckoutsAsync(id);
-
-            var holds = await _patron.GetHoldsAsync(id);
-
-            if (checkouts.Any() || holds.Any())
+            if (model.PatronActionState == ViewResponse.DeletingForbidden)
             {
                 return View("DeletingForbidden", id);
             }
-
-            var model = _mapper.Map<PatronEditViewModel>(patron);
 
             return View(model);
         }
@@ -285,19 +214,9 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var patron = await _mediator.Send(new DeletePatronCommand(id));
 
-            var patron = await _patron.GetAsync(id);
-
-            if (patron == null)
-            {
-                return NotFound();
-            }
-
-            await _userManager.DeleteAsync(patron);
+            if (patron == null) return View("PatronNotFound", id);
 
             return RedirectToAction("Index", "Patron");
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Library.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Library.Models.Patron
@@ -32,5 +33,6 @@ namespace Library.Models.Patron
         [Required]
         [Display(Name ="Home Library Branch Name")]
         public string HomeLibraryBranchName { get; set; }
+        public ViewResponse? PatronActionState { get; set; }
     }
 }
