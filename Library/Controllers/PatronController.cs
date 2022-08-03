@@ -4,13 +4,11 @@ using Library.Commands.Patron;
 using Library.Enums;
 using Library.Models.Patron;
 using Library.Queries.Patron;
-using Library.Security;
 using LibraryData;
 using LibraryData.Models;
 using LibraryData.Models.Account;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,33 +20,27 @@ namespace Library.Controllers
     public class PatronController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly IPatron _patron;
         private readonly ILibraryBranch _branch;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<AccountController> _logger;
         private readonly ICheckout _checkout;
-        private readonly IDataProtector protector;
         private readonly IMapper _mapper;
+
         public PatronController(IMediator mediator,
-            IPatron patron,
-            ILibraryBranch branch,
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            ILogger<AccountController> logger,
-            ICheckout checkout,
-            IDataProtectionProvider dataProtectionProvider,
-            DataProtectionPurposeStrings dataProtectionPurposeStrings, 
-            IMapper mapper)
+                                ILibraryBranch branch,
+                                UserManager<User> userManager,
+                                SignInManager<User> signInManager,
+                                ILogger<AccountController> logger,
+                                ICheckout checkout,
+                                IMapper mapper)
         {
             _mediator = mediator;
-            _patron = patron;
             _branch = branch;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _checkout = checkout;
-            protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
             _mapper = mapper;
         }
 
@@ -58,12 +50,14 @@ namespace Library.Controllers
             return View(await _mediator.Send(new GetAllPatronsQuery(searchString)));
         }
 
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Create()
         {
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -127,11 +121,13 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         public async Task<IActionResult> ChargeFees(string patronId)
         {
             await _checkout.ChargeOverdueFeesAsync(patronId);
             return RedirectToAction("Detail", new { id = patronId });
         }
+
 
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> ResetFees(string patronId)
@@ -139,6 +135,7 @@ namespace Library.Controllers
             await _checkout.ResetOverdueFeesAsync(patronId);
             return RedirectToAction("Detail", new { id = patronId });
         }
+
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee, Patron")]
@@ -159,6 +156,7 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Admin, Employee, Patron")]
         public async Task<IActionResult> Edit(string id)
@@ -177,6 +175,7 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Employee, Patron")]
@@ -193,6 +192,7 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Delete(string id)
@@ -201,6 +201,8 @@ namespace Library.Controllers
 
             if(model == null) return View("PatronNotFound", id);
 
+            //If patron has checked out some items (and did not turn them back)
+            //or has placed hold on them one cannot delete this patron
             if (model.PatronActionState == ViewResponse.DeletingForbidden)
             {
                 return View("DeletingForbidden", id);
@@ -208,6 +210,7 @@ namespace Library.Controllers
 
             return View(model);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

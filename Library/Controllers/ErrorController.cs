@@ -14,6 +14,7 @@ namespace Library.Controllers
             _logger = logger;
         }
 
+
         [Route("Error/{statusCode}")]
         public IActionResult HttpStatusCodeHandler(int statusCode)
         {

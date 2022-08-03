@@ -6,9 +6,11 @@ using AutoMapper;
 using Hangfire;
 using Library.Models.Catalog;
 using Library.Models.Checkout;
+using Library.Queries.Catalog;
 using Library.Security;
 using LibraryData;
 using LibraryData.Models;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +30,7 @@ namespace Library.Controllers
         private readonly ICheckout _checkout;
         private readonly ILogger<CatalogController> _logger;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         public CatalogController(
                         ILibraryAssetService assetsService,
@@ -37,8 +40,8 @@ namespace Library.Controllers
                         LibraryContext context,
                         IWebHostEnvironment webHostEnvironment,
                         ICheckout checkout,
-                        ILogger<CatalogController> logger, 
-                        IMapper mapper)
+                        ILogger<CatalogController> logger,
+                        IMapper mapper, IMediator mediator)
         {
             _assetsService = assetsService;
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
@@ -48,6 +51,7 @@ namespace Library.Controllers
             _checkout = checkout;
             _logger = logger;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         [AllowAnonymous]
@@ -64,37 +68,11 @@ namespace Library.Controllers
 
             ViewData["CurrentFilter"] = searchString;
 
-            var assets = await _assetsService.GetAllAsync();
-
-            var encryptedIdAssets = assets.Select(x => 
-                {
-                    x.EncryptedId = protector.Protect(x.Id.ToString());
-                    return x;
-                }).OrderBy(x => x.Title);
-
-
-            var listingResult = encryptedIdAssets
-                .Select(x => new AssetIndexListingViewModel
-                {
-                    Id = x.EncryptedId,
-                    ImageUrl = x.ImageUrl,
-                    AuthorOrDirector = _assetsService.GetAuthorOrDirector(x.Id),
-                    Title = _assetsService.GetTitle(x.Id),
-                    Type = _assetsService.GetType(x.Id)
-                }).ToList();
-
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                listingResult = listingResult.Where(x => x.Title.ToUpper().Contains(searchString.ToUpper()) || x.AuthorOrDirector.ToUpper().Contains(searchString.ToUpper()))
-                    .ToList();
-            }
-
-            listingResult = listingResult.OrderBy(x => x.Title).ToList();
+            var libraryAssets = await _mediator.Send(new GetAllAssetsQuery(searchString, currentFilter, pageNumber));
 
             int pageSize = 10;
 
-            return View(PaginatedList<AssetIndexListingViewModel>.Create(listingResult.AsQueryable(), pageNumber ?? 1, pageSize));
+            return View(PaginatedList<AssetIndexListingViewModel>.Create(libraryAssets.AsQueryable(), pageNumber ?? 1, pageSize));
         }
 
         [HttpGet]
