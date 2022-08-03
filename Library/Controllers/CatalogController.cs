@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hangfire;
+using Library.Commands.Catalog;
 using Library.Models.Catalog;
 using Library.Models.Checkout;
 using Library.Queries.Catalog;
@@ -54,6 +55,7 @@ namespace Library.Controllers
             _mediator = mediator;
         }
 
+
         [AllowAnonymous]
         public async Task<IActionResult> Index(string searchString, string currentFilter, int? pageNumber)
         {
@@ -75,12 +77,14 @@ namespace Library.Controllers
             return View(PaginatedList<AssetIndexListingViewModel>.Create(libraryAssets.AsQueryable(), pageNumber ?? 1, pageSize));
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
         public IActionResult Create()
         {
             return View();
         }
+
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
@@ -95,21 +99,7 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                string uniqueFileName = ProcessUploadedAssetFile(model);
-
-                var book = _mapper.Map<Book>(model);
-
-                book.Status = _context.Statuses.FirstOrDefault(x => x.Name == "Available");
-                book.ImageUrl = "/images/" + uniqueFileName;
-                book.Location = _branch.GetBranchByName(model.LibraryBranchName);
-
-                //Prevent exceptions while searching when the author of the book is unknown
-                if (book.Author == null)
-                {
-                    book.Author = "-";
-                }
-
-                await _assetsService.AddAsync(book);
+                await _mediator.Send(new CreateBookCommand(model));
 
                 return RedirectToAction("Create", "Catalog");
             }
@@ -125,33 +115,21 @@ namespace Library.Controllers
             return View();
         }
 
+
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> CreateVideo(AssetCreateVideoViewModel model)
         {
             if (ModelState.IsValid)
             {
-                string uniqueFileName = ProcessUploadedAssetFile(model);
-
-                var video =_mapper.Map<Video>(model);
-
-                video.Status = _context.Statuses.FirstOrDefault(x => x.Name == "Available");
-                video.ImageUrl = "/images/" + uniqueFileName;
-                video.Location = _branch.GetBranchByName(model.LibraryBranchName);
-
-                //Prevent exceptions while searching when the director of the video is unknown
-                if (video.Director == null)
-                {
-                    video.Director = "-";
-                }
-
-                await _assetsService.AddAsync(video);
+                await _mediator.Send(new CreateVideoCommand(model));
 
                 return RedirectToAction("Create", "Catalog");
             }
 
             return View(model);
         }
+
 
         private string ProcessUploadedAssetFile(AssetCreateViewModel model)
         {
