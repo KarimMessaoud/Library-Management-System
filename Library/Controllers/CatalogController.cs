@@ -10,7 +10,6 @@ using Library.Models.Checkout;
 using Library.Queries.Catalog;
 using Library.Security;
 using LibraryData;
-using LibraryData.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -152,41 +151,14 @@ namespace Library.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Detail(string id)
         {
-            if (id == null)
+            var result = await _mediator.Send(new GetLibraryAssetQuery(id));
+
+            if (result == null)
             {
-                return View("NoIdFound");
+                return View("AssetNotFound", id);
             }
-
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var currentHolds = await _checkout.GetCurrentHoldsAsync(decryptedId);
-
-            var assetHoldModelCurrentHolds = currentHolds
-                .Select(x => new AssetHoldModel
-                {
-                    PatronName = _checkout.GetCurrentHoldPatronName(x.Id),
-                    HoldPlaced = _checkout.GetCurrentHoldPlaced(x.Id)
-                });
-
-            var model = _mapper.Map<AssetDetailModel>(asset);
-
-            model.AssetId = id;
-            model.AuthorOrDirector = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
-            model.Type = _assetsService.GetType(decryptedId);
-            model.ISBN = await _assetsService.GetIsbnAsync(decryptedId);
-            model.CurrentLocation = await _assetsService.GetCurrentLocationNameAsync(decryptedId);
-            model.LatestCheckout = await _checkout.GetLatestCheckoutAsync(decryptedId);
-            model.PatronName = await _checkout.GetCurrentCheckoutPatronAsync(decryptedId);
-            model.CheckoutHistory = await _checkout.GetCheckoutHistoryAsync(decryptedId);
-            model.CurrentHolds = assetHoldModelCurrentHolds;
-            
-            return View(model);
+             
+            return View(result);
         }
 
 
