@@ -4,15 +4,13 @@ using LibraryData;
 using LibraryData.Models;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Library.Commands.Catalog
 {
-    public class CreateVideoCommand : IRequest
+    public class CreateVideoCommand : UploadedAssetFileProcessor, IRequest
     {
         public AssetCreateVideoViewModel Model { get; }
 
@@ -45,7 +43,7 @@ namespace Library.Commands.Catalog
 
         protected async override Task Handle(CreateVideoCommand request, CancellationToken cancellationToken)
         {
-            string uniqueFileName = ProcessUploadedAssetFile(request.Model);
+            string uniqueFileName = request.ProcessUploadedAssetFile(request.Model, _webHostEnvironment);
 
             var video = _mapper.Map<Video>(request.Model);
 
@@ -59,25 +57,6 @@ namespace Library.Commands.Catalog
             }
 
             await _assetsService.AddAsync(video);
-        }
-
-
-        private string ProcessUploadedAssetFile(AssetCreateViewModel model)
-        {
-            string uniqueFileName = null;
-
-            if (model.Photo != null)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.Photo.CopyTo(fileStream);
-                }
-            }
-
-            return uniqueFileName;
         }
     }
 }

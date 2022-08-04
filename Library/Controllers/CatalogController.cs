@@ -26,7 +26,7 @@ namespace Library.Controllers
         private readonly IDataProtector protector;
         private readonly ILibraryBranch _branch;
         private readonly LibraryContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        //private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICheckout _checkout;
         private readonly ILogger<CatalogController> _logger;
         private readonly IMapper _mapper;
@@ -38,7 +38,7 @@ namespace Library.Controllers
                         DataProtectionPurposeStrings dataProtectionPurposeStrings,
                         ILibraryBranch branch,
                         LibraryContext context,
-                        IWebHostEnvironment webHostEnvironment,
+                        //IWebHostEnvironment webHostEnvironment,
                         ICheckout checkout,
                         ILogger<CatalogController> logger,
                         IMapper mapper, IMediator mediator)
@@ -47,7 +47,7 @@ namespace Library.Controllers
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
             _branch = branch;
             _context = context;
-            _webHostEnvironment = webHostEnvironment;
+            //_webHostEnvironment = webHostEnvironment;
             _checkout = checkout;
             _logger = logger;
             _mapper = mapper;
@@ -128,25 +128,6 @@ namespace Library.Controllers
             }
 
             return View(model);
-        }
-
-
-        private string ProcessUploadedAssetFile(AssetCreateViewModel model)
-        {
-            string uniqueFileName = null;
-
-            if (model.Photo != null)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.Photo.CopyTo(fileStream);
-                }
-            }
-
-            return uniqueFileName;
         }
 
 

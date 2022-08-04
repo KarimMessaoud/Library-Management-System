@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Library.Commands.Catalog
 {
-    public class EditBookCommand : IRequest<Book>
+    public class EditBookCommand : UploadedAssetFileProcessor, IRequest<Book>
     {
         public AssetEditBookViewModel Model { get; }
 
@@ -67,7 +67,7 @@ namespace Library.Commands.Catalog
                     System.IO.File.Delete(filePath);
                 }
 
-                string uniqueFileName = ProcessUploadedAssetFile(request.Model);
+                string uniqueFileName = request.ProcessUploadedAssetFile(request.Model, _webHostEnvironment);
 
                 book.ImageUrl = "/images/" + uniqueFileName;
             }
@@ -77,24 +77,6 @@ namespace Library.Commands.Catalog
             await _assetsService.UpdateAsync(book);
 
             return book;
-        }
-
-        private string ProcessUploadedAssetFile(AssetCreateViewModel model)
-        {
-            string uniqueFileName = null;
-
-            if (model.Photo != null)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid().ToString() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.Photo.CopyTo(fileStream);
-                }
-            }
-
-            return uniqueFileName;
         }
     }
 }
