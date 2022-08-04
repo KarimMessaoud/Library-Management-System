@@ -216,31 +216,15 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var result = await _mediator.Send(new DeleteLibraryAssetQuery(id));
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+            if(result == null) return View("AssetNotFound", id);
 
-            ViewBag.DecryptedId = decryptedId;
+            ViewBag.DecryptedId = result.DecryptedId;
 
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var model = _mapper.Map<AssetEditBookViewModel>(asset);
-
-            model.Id = id;
-            model.Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
-            model.ISBN = await _assetsService.GetIsbnAsync(decryptedId);
-
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
