@@ -92,6 +92,7 @@ namespace Library.Controllers
             return View();
         }
 
+
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> CreateBook(AssetCreateBookViewModel model)
@@ -148,6 +149,7 @@ namespace Library.Controllers
             return uniqueFileName;
         }
 
+
         [AllowAnonymous]
         public async Task<IActionResult> Detail(string id)
         {
@@ -167,29 +169,16 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> EditBook(string id)
         {
-            if (id == null)
+            var result = await _mediator.Send(new EditBookQuery(id));
+
+            if (result == null)
             {
-                return View("NoIdFound");
+                return View("AssetNotFound", id);
             }
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
-
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var model = _mapper.Map<AssetEditBookViewModel>(asset);
-
-            model.Id = id;
-            model.Author = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
-            model.ISBN = await _assetsService.GetIsbnAsync(decryptedId);
-
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -198,38 +187,9 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
-                var book = await _assetsService.GetBookByIdAsync(decryptedId);
+                var result = await _mediator.Send(new EditBookCommand(model));
 
-                if (book == null)
-                {
-                    Response.StatusCode = 404;
-                    return View("AssetNotFound", decryptedId);
-                }
-
-                book.Title = model.Title;
-                book.Author = model.Author;
-                book.Year = model.Year;
-                book.ISBN = model.ISBN;
-                book.Cost = model.Cost;
-                book.NumberOfCopies = model.NumberOfCopies;
-
-                if (model.Photo != null)
-                {
-                    if (model.ExistingPhotoPath != null && model.ExistingPhotoPath != "/images/")
-                    {
-                        string filePath = Path.Join(_webHostEnvironment.WebRootPath, model.ExistingPhotoPath);
-                        System.IO.File.Delete(filePath);
-                    }
-
-                    string uniqueFileName = ProcessUploadedAssetFile(model);
-
-                    book.ImageUrl = "/images/" + uniqueFileName;
-                }
-
-                book.Location = _branch.GetBranchByName(model.LibraryBranchName);
-
-                await _assetsService.UpdateAsync(book);
+                if (result == null) return View("AssetNotFound", model.Id);
 
                 return RedirectToAction("Detail", "Catalog", new { id = model.Id });
             }
