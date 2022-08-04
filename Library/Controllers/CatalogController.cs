@@ -202,28 +202,16 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> EditVideo(string id)
         {
-            if (id == null)
+            var result = await _mediator.Send(new EditVideoQuery(id));
+
+            if (result == null)
             {
-                return View("NoIdFound");
+                return View("AssetNotFound", id);
             }
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
-
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var model = _mapper.Map<AssetEditVideoViewModel>(asset);
-
-            model.Id = id;
-            model.Director = await _assetsService.GetAuthorOrDirectorAsync(decryptedId);
-
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -232,37 +220,9 @@ namespace Library.Controllers
         {
             if (ModelState.IsValid)
             {
-                int decryptedId = Convert.ToInt32(protector.Unprotect(model.Id));
-                var video = await _assetsService.GetVideoByIdAsync(decryptedId);
+                var result = await _mediator.Send(new EditVideoCommand(model));
 
-                if (video == null)
-                {
-                    Response.StatusCode = 404;
-                    return View("AssetNotFound", decryptedId);
-                }
-
-                video.Title = model.Title;
-                video.Director = model.Director;
-                video.Year = model.Year;
-                video.Cost = model.Cost;
-                video.NumberOfCopies = model.NumberOfCopies;
-
-                if (model.Photo != null)
-                {
-                    if (model.ExistingPhotoPath != null && model.ExistingPhotoPath != "/images/")
-                    {
-                        string filePath = Path.Join(_webHostEnvironment.WebRootPath, model.ExistingPhotoPath);
-                        System.IO.File.Delete(filePath);
-                    }
-
-                    string uniqueFileName = ProcessUploadedAssetFile(model);
-
-                    video.ImageUrl = "/images/" + uniqueFileName;
-                }
-
-                video.Location = _branch.GetBranchByName(model.LibraryBranchName);
-
-                await _assetsService.UpdateAsync(video);
+                if (result == null) return View("AssetNotFound", model.Id);
 
                 return RedirectToAction("Detail", "Catalog", new { id = model.Id });
             }
