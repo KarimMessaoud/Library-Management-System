@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Library.Models.Administration;
+using Library.Queries.Administration;
 using LibraryData.Models.Account;
 using LibraryData.Models.Administration;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,17 +23,21 @@ namespace Library.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILogger<AdministrationController> _logger;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
                                         UserManager<User> userManager,
-                                        ILogger<AdministrationController> logger, 
-                                        IMapper mapper)
+                                        ILogger<AdministrationController> logger,
+                                        IMapper mapper, 
+                                        IMediator mediator)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _logger = logger;
             _mapper = mapper;
+            _mediator = mediator;
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -39,6 +45,7 @@ namespace Library.Controllers
         {
             return View();
         }
+
 
         [HttpGet]
         public IActionResult RolesList()
@@ -48,6 +55,7 @@ namespace Library.Controllers
             return View(roles);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> UsersList()
         {
@@ -56,11 +64,13 @@ namespace Library.Controllers
             return View(users);
         }
 
+
         [HttpGet]
         public IActionResult CreateRole()
         {
             return View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
@@ -88,33 +98,21 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> EditRole(string id)
         {
-            var role = await _roleManager.FindByIdAsync(id);
+            var result = await _mediator.Send(new EditRoleQuery(id));
 
-            if (role == null)
+            if (result == null) 
             {
                 ViewBag.ErrorMessage = $"Role with id: {id} cannot be found.";
-                return View("NotFound");
+                return View("NotFound"); 
             }
 
-            var model = new EditRoleViewModel
-            {
-                Id = role.Id,
-                RoleName = role.Name
-            };
-
-            foreach (var user in _userManager.Users)
-            {
-                if (await _userManager.IsInRoleAsync(user, role.Name))
-                {
-                    model.Users.Add(user.UserName);
-                }
-            }
-
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -144,41 +142,21 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> EditUsersInRole(string roleId)
         {
             ViewBag.RoleId = roleId;
 
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var result = await _mediator.Send(new EditUsersInRoleQuery(roleId));
 
-            if (role == null)
+            if(result == null)
             {
                 ViewBag.ErrorMessage = $"Role with id: {roleId} cannot be found.";
                 return View("NotFound");
             }
 
-            var model = new List<UserRoleViewModel>();
-
-            foreach (var user in _userManager.Users)
-            {
-                var userRoleViewModel = new UserRoleViewModel
-                {
-                    UserId = user.Id,
-                    UserName = user.UserName
-                };
-
-                if (await _userManager.IsInRoleAsync(user, role.Name))
-                {
-                    userRoleViewModel.IsSelected = true;
-                }
-                else
-                {
-                    userRoleViewModel.IsSelected = false;
-                }
-                model.Add(userRoleViewModel);
-            }
-
-            return View(model);
+            return View(result);
         }
 
         [HttpPost]
