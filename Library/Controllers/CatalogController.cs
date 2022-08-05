@@ -2,11 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Hangfire;
 using Library.Commands.Catalog;
 using Library.Enums;
 using Library.Models.Catalog;
-using Library.Models.Checkout;
 using Library.Queries.Catalog;
 using Library.Security;
 using LibraryData;
@@ -286,31 +284,13 @@ namespace Library.Controllers
         [Authorize(Roles = "Patron, Employee, Admin")]
         public async Task<IActionResult> PlaceHold(string assetId, int libraryCardId)
         {
-            int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
+            var result = await _mediator.Send(new PlaceHoldCommand(assetId, libraryCardId));
 
-            if (!await _checkout.PlaceHoldAsync(decryptedId, libraryCardId))
-            {
-                return RedirectToAction("Hold", new { id = assetId });
-            }
-
-            var patron = await _context.Users
-                .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
-
-            var hold = await _context.Holds
-                .FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId && x.LibraryAsset.Id == decryptedId);
-
-
-            if (hold.FirstHold == true)
-            {
-                BackgroundJob.Enqueue<IEmailService>(x => x.SendEmailAsync(patron.FirstName, patron.Email, "Place hold on the book",
-                $"You have placed hold on the asset: '{hold.LibraryAsset.Title}' from our library. " +
-                "Now you have to come to us and take the item in 24 hours time. " +
-                "If you will not take the item up to this time you will not be able to borrow it."));
-            }
-
-
-            return RedirectToAction("Detail", new { id = assetId });
+            return result == ViewResponse.OK ?
+                    RedirectToAction("Detail", new { id = assetId })
+                  : RedirectToAction("Hold", new { id = assetId });
         }
+
 
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> MarkLost(string assetId)

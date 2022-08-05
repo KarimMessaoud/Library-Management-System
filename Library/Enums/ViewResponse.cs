@@ -10,6 +10,7 @@ namespace Library.Enums
         OK,
         DeletingForbidden,
         Error,
-        NotFound
+        NotFound,
+        NotAllowed
     }
 }
