@@ -1,50 +1,21 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Library.Commands.Catalog;
 using Library.Enums;
 using Library.Models.Catalog;
 using Library.Queries.Catalog;
-using Library.Security;
-using LibraryData;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Library.Controllers
 {
     public class CatalogController : Controller
     {
-        private readonly ILibraryAssetService _assetsService;
-        private readonly IDataProtector protector;
-        private readonly ILibraryBranch _branch;
-        private readonly LibraryContext _context;
-        private readonly ICheckout _checkout;
-        private readonly ILogger<CatalogController> _logger;
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public CatalogController(
-                        ILibraryAssetService assetsService,
-                        IDataProtectionProvider dataProtectionProvider,
-                        DataProtectionPurposeStrings dataProtectionPurposeStrings,
-                        ILibraryBranch branch,
-                        LibraryContext context,
-                        ICheckout checkout,
-                        ILogger<CatalogController> logger,
-                        IMapper mapper, IMediator mediator)
+        public CatalogController(IMediator mediator)
         {
-            _assetsService = assetsService;
-            protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
-            _branch = branch;
-            _context = context;
-            _checkout = checkout;
-            _logger = logger;
-            _mapper = mapper;
             _mediator = mediator;
         }
 
