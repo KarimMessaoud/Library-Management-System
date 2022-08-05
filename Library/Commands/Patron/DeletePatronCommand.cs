@@ -1,4 +1,5 @@
-﻿using LibraryData;
+﻿using Library.Enums;
+using LibraryData;
 using LibraryData.Models.Account;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Library.Commands.Patron
 {
-    public class DeletePatronCommand : IRequest<User>
+    public class DeletePatronCommand : IRequest<ViewResponse>
     {
         public string Id { get; }
 
@@ -17,7 +18,7 @@ namespace Library.Commands.Patron
         }
     }
 
-    public class DeleteConfirmedCommandHandler : IRequestHandler<DeletePatronCommand, User>
+    public class DeleteConfirmedCommandHandler : IRequestHandler<DeletePatronCommand, ViewResponse>
     {
         private readonly IPatron _patron;
         private readonly UserManager<User> _userManager;
@@ -28,23 +29,23 @@ namespace Library.Commands.Patron
             _patron = patron;
         }
 
-        public async Task<User> Handle(DeletePatronCommand request, CancellationToken cancellationToken)
+        public async Task<ViewResponse> Handle(DeletePatronCommand request, CancellationToken cancellationToken)
         {
             if (request.Id == null)
             {
-                return null;
+                return ViewResponse.NotFound;
             }
 
             var patron = await _patron.GetAsync(request.Id);
 
             if (patron == null)
             {
-                return null;
+                return ViewResponse.NotFound;
             }
 
             await _userManager.DeleteAsync(patron);
 
-            return patron;
+            return ViewResponse.OK;
         }
     }
 }

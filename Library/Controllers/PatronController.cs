@@ -218,7 +218,7 @@ namespace Library.Controllers
         {
             var result = await _mediator.Send(new DeletePatronCommand(id));
 
-            if (result == null) return View("PatronNotFound", id);
+            if (result == ViewResponse.NotFound) return View("PatronNotFound", id);
 
             return RedirectToAction("Index", "Patron");
         }
