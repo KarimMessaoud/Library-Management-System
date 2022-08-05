@@ -241,32 +241,13 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Checkout(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var result = await _mediator.Send(new CheckoutLibraryAssetQuery(id));
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+            if (result == null) return View("AssetNotFound", id);
 
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var model = new CheckoutViewModel()
-            {
-                LibraryCardId = "",
-                AssetId = id,
-                Title = asset.Title,
-                ImageUrl = asset.ImageUrl,
-                IsCheckedOut = await _checkout.IsCheckedOutAsync(decryptedId)
-            };
-
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin, Employee")]
