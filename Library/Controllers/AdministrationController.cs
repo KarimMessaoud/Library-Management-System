@@ -336,6 +336,7 @@ namespace Library.Controllers
             return View(result);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> ManageUserClaims(ManageUserClaimsViewModel model)
         {
@@ -369,42 +370,23 @@ namespace Library.Controllers
             return RedirectToAction("EditUser", new { Id = model.UserId });
         }
 
+
         [HttpGet]
         public async Task<IActionResult> ManageUserRoles(string userId)
         {
             ViewBag.UserId = userId;
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _mediator.Send(new ManageUserRolesQuery(userId));
 
-            if (user == null)
+            if(result == null)
             {
                 ViewBag.ErrorMessage = $"User with id: {userId} cannot be found.";
                 return View("NotFound");
             }
 
-            var model = new List<ManageUserRolesViewModel>();
-
-            foreach (var role in _roleManager.Roles)
-            {
-                var manageUserRolesViewModel = new ManageUserRolesViewModel
-                {
-                    RoleId = role.Id,
-                    RoleName = role.Name
-                };
-
-                if (await _userManager.IsInRoleAsync(user, role.Name))
-                {
-                    manageUserRolesViewModel.IsSelected = true;
-                }
-                else
-                {
-                    manageUserRolesViewModel.IsSelected = false;
-                }
-                model.Add(manageUserRolesViewModel);
-            }
-
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> ManageUserRoles(List<ManageUserRolesViewModel> model, string userId)
