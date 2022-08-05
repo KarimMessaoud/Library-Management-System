@@ -321,40 +321,19 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> ManageUserClaims(string userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _mediator.Send(new ManageUserClaimsQuery(userId));
 
-            if (user == null)
+            if(result == null)
             {
                 ViewBag.ErrorMessage = $"User with id: {userId} cannot be found.";
                 return View("NotFound");
             }
 
-            var existingUserClaims = await _userManager.GetClaimsAsync(user);
-
-            var model = new ManageUserClaimsViewModel
-            {
-                UserId = userId
-            };
-
-            foreach (var claim in ClaimsStore.AllClaims)
-            {
-                var userClaim = new UserClaim
-                {
-                    ClaimType = claim.Type
-                };
-
-                if (existingUserClaims.Any(x => x.Type == claim.Type && x.Value == "true"))
-                {
-                    userClaim.IsSelected = true;
-                }
-
-                model.Claims.Add(userClaim);
-            }
-
-            return View(model);
+            return View(result);
         }
 
         [HttpPost]
