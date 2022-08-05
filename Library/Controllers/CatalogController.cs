@@ -262,17 +262,13 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> CheckIn(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var result = await _mediator.Send(new CheckInLibraryAssetCommand(id));
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
-
-            await _checkout.CheckInItemAsync(decryptedId);
+            if(result == ViewResponse.NotFound) return View("AssetNotFound", id);
 
             return RedirectToAction("Detail", new { id = id });
         }
+
 
         [HttpGet]
         [Authorize(Roles = "Patron, Employee, Admin")]

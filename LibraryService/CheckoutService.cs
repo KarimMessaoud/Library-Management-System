@@ -131,7 +131,6 @@ namespace LibraryService
         {
             var now = DateTime.Now;
 
-            // remove any existing checkouts on the item
             await RemoveExistingCheckouts (assetId);
 
             // close any existing checkout history
