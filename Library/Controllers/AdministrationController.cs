@@ -159,6 +159,7 @@ namespace Library.Controllers
             return View(result);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
         {
@@ -207,6 +208,7 @@ namespace Library.Controllers
 
         }
 
+
         [HttpPost]
         [Authorize(Policy = "DeleteRolePolicy")]
         public async Task<IActionResult> DeleteRole(string id)
@@ -246,6 +248,7 @@ namespace Library.Controllers
             }
         }
 
+
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -271,34 +274,21 @@ namespace Library.Controllers
             return View("UsersList");
         }
 
+
         [HttpGet]
         public async Task<IActionResult> EditUser(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var result = await _mediator.Send(new EditUserQuery(id));
 
-            if (user == null)
+            if(result == null)
             {
                 ViewBag.ErrorMessage = $"User with id: {id} cannot be found.";
                 return View("NotFound");
             }
 
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var userClaims = await _userManager.GetClaimsAsync(user);
-
-            var model = _mapper.Map<EditUserViewModel>(user);
-            model.Roles = userRoles;
-
-            List<AuxiliaryClaim> AuxiliaryClaims = new List<AuxiliaryClaim>();
-
-            foreach (var claim in userClaims)
-            {
-                if (claim.Value == "true") AuxiliaryClaims.Add(new AuxiliaryClaim { Type = claim.Type, Value = "Yes" });
-                else AuxiliaryClaims.Add(new AuxiliaryClaim { Type = claim.Type, Value = "No" });
-            }
-
-            model.Claims = AuxiliaryClaims.Select(x => x.Type + " : " + x.Value).ToList();
-            return View(model);
+            return View(result);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> EditUser(EditUserViewModel model)
