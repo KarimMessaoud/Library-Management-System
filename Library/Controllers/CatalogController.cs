@@ -253,12 +253,11 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> PlaceCheckout(string assetId, int libraryCardId)
         {
-            int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
-
-            await _checkout.CheckOutItemAsync(decryptedId, libraryCardId);
+            await _mediator.Send(new CheckoutLibraryAssetCommand(assetId, libraryCardId));
 
             return RedirectToAction("Detail", new { id = assetId });
         }
+
 
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> CheckIn(string id)
