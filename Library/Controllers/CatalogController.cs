@@ -274,34 +274,11 @@ namespace Library.Controllers
         [Authorize(Roles = "Patron, Employee, Admin")]
         public async Task<IActionResult> Hold(string id)
         {
-            if (id == null)
-            {
-                return View("NoIdFound");
-            }
+            var result = await _mediator.Send(new HoldLibraryAssetQuery(id));
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+            if(result == null) return View("AssetNotFound", id);
 
-            var asset = await _assetsService.GetByIdAsync(decryptedId);
-
-            if (asset == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
-
-            var model = new CheckoutViewModel()
-            {
-                LibraryCardId = "",
-                AssetId = id,
-                Title = asset.Title,
-                ImageUrl = asset.ImageUrl,
-                IsCheckedOut = await _checkout.IsCheckedOutAsync(decryptedId)
-            };
-
-            var currentholds = await _checkout.GetCurrentHoldsAsync(decryptedId);
-            model.HoldCount = currentholds.Count();
-
-            return View(model);
+            return View(result);
         }
 
 
