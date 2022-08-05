@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 
 namespace Library.Commands.Catalog
 {
-    public class MarkLibraryAssetLostCommand : IRequest<ViewResponse>
+    public class MarkLibraryAssetFoundCommand : IRequest<ViewResponse>
     {
         public string AssetId { get; }
 
-        public MarkLibraryAssetLostCommand(string assetId)
+        public MarkLibraryAssetFoundCommand(string assetId)
         {
             AssetId = assetId;
         }
     }
 
-    public class MarkLibraryAssetLostCommandHandler : IRequestHandler<MarkLibraryAssetLostCommand, ViewResponse>
+    public class MarkLibraryAssetFoundCommandHandler : IRequestHandler<MarkLibraryAssetFoundCommand, ViewResponse>
     {
         private readonly IDataProtector protector;
         private readonly ICheckout _checkout;
 
-        public MarkLibraryAssetLostCommandHandler(IDataProtectionProvider dataProtectionProvider,
+        public MarkLibraryAssetFoundCommandHandler(IDataProtectionProvider dataProtectionProvider,
                                            DataProtectionPurposeStrings dataProtectionPurposeStrings,
                                            ICheckout checkout)
         {
@@ -32,7 +32,7 @@ namespace Library.Commands.Catalog
             _checkout = checkout;
         }
 
-        public async Task<ViewResponse> Handle(MarkLibraryAssetLostCommand request, CancellationToken cancellationToken)
+        public async Task<ViewResponse> Handle(MarkLibraryAssetFoundCommand request, CancellationToken cancellationToken)
         {
             if (request.AssetId == null)
             {
@@ -41,7 +41,7 @@ namespace Library.Commands.Catalog
 
             int decryptedId = Convert.ToInt32(protector.Unprotect(request.AssetId));
 
-            await _checkout.MarkLostAsync(decryptedId);
+            await _checkout.MarkFoundAsync(decryptedId);
 
             return ViewResponse.OK;
         }

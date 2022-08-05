@@ -306,14 +306,9 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> MarkFound(string assetId)
         {
-            if (assetId == null)
-            {
-                return View("NoIdFound");
-            }
+            var result = await _mediator.Send(new MarkLibraryAssetFoundCommand(assetId));
 
-            int decryptedId = Convert.ToInt32(protector.Unprotect(assetId));
-
-            await _checkout.MarkFoundAsync(decryptedId);
+            if(result == ViewResponse.NotFound) return View("AssetNotFound", assetId);
 
             return RedirectToAction("Detail", new { id = assetId });
         }
