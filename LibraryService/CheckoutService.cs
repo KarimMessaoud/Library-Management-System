@@ -82,10 +82,8 @@ namespace LibraryService
 
             await UpdateAssetStatus(assetId, "Available");
 
-            // remove an existing checkout on the item
             await RemoveExistingCheckouts(assetId);
 
-            // close any existing checkout history
             await CloseExistingCheckouts(assetId, now);
 
             await _context.SaveChangesAsync();
@@ -141,9 +139,6 @@ namespace LibraryService
                 .Include(x => x.LibraryCard)
                 .Where(x => x.LibraryAsset.Id == assetId);
 
-            // if there are any holds on the item 
-            //send email to the patron with the earliest hold
-
             if (await currentHolds.AnyAsync())
             {
                 await SendEmailToEarliestHoldPatron(assetId, currentHolds);
@@ -155,8 +150,7 @@ namespace LibraryService
                 return;
             }
 
-            // otherwise, update the item status to available
-                await UpdateAssetStatus (assetId, "Available");
+            await UpdateAssetStatus (assetId, "Available");
             
             await _context.SaveChangesAsync();
         }
@@ -196,8 +190,6 @@ namespace LibraryService
                 return;
             }
 
-            //In case of libraryCard exists but patron has been deleted,
-            //do not allow to checkout the item
             var patron = await _context.Users.FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
             if(patron == null)
@@ -259,14 +251,11 @@ namespace LibraryService
             var card = await _context.LibraryCards
                 .FirstOrDefaultAsync(x => x.Id == libraryCardId);
 
-            //Do not allow user enter libraryCardId that does not exist
             if(card == null)
             {
                 return false;
             }
 
-            //In case of libraryCard exists but patron has been deleted,
-            //do not allow to place hold on the item
             var patron = await _context.Users.FirstOrDefaultAsync(x => x.LibraryCard.Id == libraryCardId);
 
             if (patron == null)
