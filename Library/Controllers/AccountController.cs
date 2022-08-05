@@ -34,12 +34,14 @@ namespace Library.Controllers
             _mapper = mapper;
         }
 
+
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult RegisterEmployee()
         {
             return View();
         }
+
 
         [AcceptVerbs("Get", "Post")]
         [AllowAnonymous]
@@ -56,6 +58,7 @@ namespace Library.Controllers
                 return Json($"Email {email} is already in use");
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -128,6 +131,7 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
@@ -155,6 +159,7 @@ namespace Library.Controllers
 
             return View("Error");
         }
+
 
         [HttpGet]
         [AllowAnonymous]
@@ -206,6 +211,7 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -214,12 +220,14 @@ namespace Library.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -249,6 +257,7 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string email, string token)
@@ -260,6 +269,7 @@ namespace Library.Controllers
 
             return View();
         }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -297,11 +307,13 @@ namespace Library.Controllers
             return View(model);
         }
 
+
         [HttpGet]
         public IActionResult ChangePassword()
         {
             return View();
         }
+
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
