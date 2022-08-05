@@ -1,10 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hangfire;
 using Library.Commands.Catalog;
+using Library.Enums;
 using Library.Models.Catalog;
 using Library.Models.Checkout;
 using Library.Queries.Catalog;
@@ -13,7 +13,6 @@ using LibraryData;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -26,7 +25,6 @@ namespace Library.Controllers
         private readonly IDataProtector protector;
         private readonly ILibraryBranch _branch;
         private readonly LibraryContext _context;
-        //private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICheckout _checkout;
         private readonly ILogger<CatalogController> _logger;
         private readonly IMapper _mapper;
@@ -38,7 +36,6 @@ namespace Library.Controllers
                         DataProtectionPurposeStrings dataProtectionPurposeStrings,
                         ILibraryBranch branch,
                         LibraryContext context,
-                        //IWebHostEnvironment webHostEnvironment,
                         ICheckout checkout,
                         ILogger<CatalogController> logger,
                         IMapper mapper, IMediator mediator)
@@ -47,7 +44,6 @@ namespace Library.Controllers
             protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.AssetIdRouteValue);
             _branch = branch;
             _context = context;
-            //_webHostEnvironment = webHostEnvironment;
             _checkout = checkout;
             _logger = logger;
             _mapper = mapper;
@@ -231,27 +227,15 @@ namespace Library.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            int decryptedId = Convert.ToInt32(protector.Unprotect(id));
+            var result = await _mediator.Send(new DeleteLibraryAssetCommand(id));
 
-            var book = await _assetsService.GetByIdAsync(decryptedId);
+            if(result == ViewResponse.NotFound) return View("AssetNotFound", id);
 
-            if (book == null)
-            {
-                Response.StatusCode = 404;
-                return View("AssetNotFound", decryptedId);
-            }
+            else if(result == ViewResponse.OK) return RedirectToAction("Index");
 
-            try
-            {
-                await _assetsService.DeleteAsync(book);
-                return RedirectToAction("Index");
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex.Message);
-                return RedirectToAction(nameof(Delete), new { id = id });
-            }
+            return RedirectToAction(nameof(Delete), new { id = id });
         }
+
 
         [HttpGet]
         [Authorize(Roles = "Admin, Employee")]
