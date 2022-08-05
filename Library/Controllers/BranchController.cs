@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Library.Models.Branch;
+using Library.Queries.Branch;
 using LibraryData;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,30 +15,17 @@ namespace Library.Controllers
     {
         private readonly ILibraryBranch _branch;
         private readonly IMapper _mapper;
-        public BranchController(ILibraryBranch branch, IMapper mapper)
+        private readonly IMediator _mediator;
+        public BranchController(ILibraryBranch branch, IMapper mapper, IMediator mediator)
         {
             _branch = branch;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var branches = _branch.GetAll().Select(x => new BranchDetailViewModel()
-            {
-                Id = x.Id,
-                Name = x.Name,
-                IsOpen = _branch.IsBranchOpen(x.Id),
-                //Asynchronous operations used in a blocking manner below
-                NumberOfAssets = _branch.GetAssetsAsync(x.Id).Result.Count(),
-                NumberOfPatrons = _branch.GetPatronsAsync(x.Id).Result.Count()
-            });
-
-            var model = new BranchIndexViewModel()
-            {
-                Branches = branches
-            };
-
-            return View(model);
+            return View(await _mediator.Send(new GetAllBranchesQuery()));
         }
 
         public async Task<IActionResult> Detail(int? id)
